@@ -1,0 +1,5 @@
+server_port: 8080
+database_url: postgres://pooplet:pooplet@postgres:5432/pooplet?sslmode=disable
+jwt_secret: your-super-secret-key-change-in-production
+jwt_expires_at: 168
+environment: production

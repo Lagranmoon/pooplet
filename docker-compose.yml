@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pooplet-postgres
+    environment:
+      POSTGRES_USER: pooplet
+      POSTGRES_PASSWORD: pooplet
+      POSTGRES_DB: pooplet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pooplet -d pooplet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pooplet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pooplet
+    environment:
+      SERVER_PORT: 8080
+      DATABASE_URL: postgres://pooplet:pooplet@postgres:5432/pooplet?sslmode=disable
+      JWT_SECRET: your-super-secret-key-change-in-production
+      JWT_EXPIRES_AT: 168
+      ENVIRONMENT: production
+      INITIAL_ADMIN_EMAIL: admin@pooplet.local
+      INITIAL_ADMIN_PASSWORD: Admin12345
+      INITIAL_ADMIN_NAME: Administrator
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

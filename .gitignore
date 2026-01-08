@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+*.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+
+# Go
+*.test
+*.out
+coverage/
+
+# Backend
+backend/config.yml
+backend/tmp/
+
+# Test results
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Coverage
+coverage/
+*.coverage
+
+# Claude
+.claude/
+
+# Settings symlinks
+settings.json*
