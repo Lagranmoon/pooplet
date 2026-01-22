@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { recordService } from '../services/recordService';
 import type {
   BowelMovementRecord,
@@ -50,17 +50,17 @@ export function useRecords(params: RecordQueryParams = {}) {
     try {
       const result: PaginatedResponse<BowelMovementRecord> = await recordService.getRecords(params);
       setState({
-        records: result.data,
+        records: result.data || [],
         loading: false,
         error: null,
-        count: result.count,
-        hasMore: result.hasMore,
+        count: result.count || 0,
+        hasMore: result.hasMore || false,
       });
     } catch (error: any) {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error.message || '加载记录失败',
+        error: String(error?.message || error || '加载记录失败'),
       }));
     }
   }, [params, refreshTrigger]);
@@ -85,16 +85,16 @@ export function useRecords(params: RecordQueryParams = {}) {
       
       setState(prev => ({
         ...prev,
-        records: [...prev.records, ...result.data],
+        records: [...prev.records, ...(result.data || [])],
         loading: false,
-        hasMore: result.hasMore,
-        count: result.count,
+        hasMore: result.hasMore || false,
+        count: result.count || 0,
       }));
     } catch (error: any) {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error.message || '加载更多记录失败',
+        error: String(error?.message || error || '加载更多记录失败'),
       }));
     }
   }, [params, state.records.length, state.hasMore, state.loading]);
@@ -103,11 +103,11 @@ export function useRecords(params: RecordQueryParams = {}) {
     loadRecords();
   }, [loadRecords]);
 
-  return {
+  return useMemo(() => ({
     ...state,
     refresh,
     loadMore,
-  };
+  }), [state, refresh, loadMore]);
 }
 
 /**
@@ -127,22 +127,22 @@ export function useCreateRecord() {
       const result: ApiResponse<BowelMovementRecord> = await recordService.createRecord(data);
       
       if (result.error) {
-        setState({ loading: false, error: result.error.message });
+        setState({ loading: false, error: String(result.error) });
         return null;
       }
 
       setState({ loading: false, error: null });
       return result.data;
     } catch (error: any) {
-      setState({ loading: false, error: error.message || '创建记录失败' });
+      setState({ loading: false, error: String(error?.message || error || '创建记录失败') });
       return null;
     }
   }, []);
 
-  return {
+  return useMemo(() => ({
     ...state,
     createRecord,
-  };
+  }), [state, createRecord]);
 }
 
 /**
@@ -165,22 +165,22 @@ export function useUpdateRecord() {
       const result: ApiResponse<BowelMovementRecord> = await recordService.updateRecord(id, data);
       
       if (result.error) {
-        setState({ loading: false, error: result.error.message });
+        setState({ loading: false, error: String(result.error) });
         return null;
       }
 
       setState({ loading: false, error: null });
       return result.data;
     } catch (error: any) {
-      setState({ loading: false, error: error.message || '更新记录失败' });
+      setState({ loading: false, error: String(error?.message || error || '更新记录失败') });
       return null;
     }
   }, []);
 
-  return {
+  return useMemo(() => ({
     ...state,
     updateRecord,
-  };
+  }), [state, updateRecord]);
 }
 
 /**
@@ -200,14 +200,14 @@ export function useDeleteRecord() {
       const result: ApiResponse<void> = await recordService.deleteRecord(id);
       
       if (result.error) {
-        setState({ loading: false, error: result.error.message });
+        setState({ loading: false, error: String(result.error) });
         return false;
       }
 
       setState({ loading: false, error: null });
       return true;
     } catch (error: any) {
-      setState({ loading: false, error: error.message || '删除记录失败' });
+      setState({ loading: false, error: String(error?.message || error || '删除记录失败') });
       return false;
     }
   }, []);
@@ -219,23 +219,23 @@ export function useDeleteRecord() {
       const result: ApiResponse<void> = await recordService.deleteRecords(ids);
       
       if (result.error) {
-        setState({ loading: false, error: result.error.message });
+        setState({ loading: false, error: String(result.error) });
         return false;
       }
 
       setState({ loading: false, error: null });
       return true;
     } catch (error: any) {
-      setState({ loading: false, error: error.message || '删除记录失败' });
+      setState({ loading: false, error: String(error?.message || error || '删除记录失败') });
       return false;
     }
   }, []);
 
-  return {
+  return useMemo(() => ({
     ...state,
     deleteRecord,
     deleteRecords,
-  };
+  }), [state, deleteRecord, deleteRecords]);
 }
 
 /**
@@ -262,13 +262,13 @@ export function useRecord(id: string | null) {
       const result: ApiResponse<BowelMovementRecord> = await recordService.getRecord(id);
       
       if (result.error) {
-        setError(result.error.message);
+        setError(String(result.error));
         setRecord(null);
       } else {
         setRecord(result.data);
       }
     } catch (error: any) {
-      setError(error.message || '加载记录失败');
+      setError(String(error?.message || error || '加载记录失败'));
       setRecord(null);
     } finally {
       setLoading(false);
@@ -279,12 +279,12 @@ export function useRecord(id: string | null) {
     loadRecord();
   }, [loadRecord]);
 
-  return {
+  return useMemo(() => ({
     record,
     loading,
     error,
     refresh: loadRecord,
-  };
+  }), [record, loading, error, loadRecord]);
 }
 
 /**
@@ -305,13 +305,13 @@ export function useTodayRecords() {
       const result: ApiResponse<BowelMovementRecord[]> = await recordService.getTodayRecords();
       
       if (result.error) {
-        setError(result.error.message);
+        setError(String(result.error));
         setRecords([]);
       } else {
         setRecords(result.data || []);
       }
     } catch (error: any) {
-      setError(error.message || '加载今日记录失败');
+      setError(String(error?.message || error || '加载今日记录失败'));
       setRecords([]);
     } finally {
       setLoading(false);
@@ -326,13 +326,13 @@ export function useTodayRecords() {
     loadTodayRecords();
   }, [loadTodayRecords]);
 
-  return {
+  return useMemo(() => ({
     records,
     loading,
     error,
     refresh,
     count: records.length,
-  };
+  }), [records, loading, error, refresh]);
 }
 
 /**
@@ -362,13 +362,13 @@ export function useRecordsByDateRange(startDate: string, endDate: string, limit?
       );
       
       if (result.error) {
-        setError(result.error.message);
+        setError(String(result.error));
         setRecords([]);
       } else {
         setRecords(result.data || []);
       }
     } catch (error: any) {
-      setError(error.message || '加载记录失败');
+      setError(String(error?.message || error || '加载记录失败'));
       setRecords([]);
     } finally {
       setLoading(false);
@@ -379,11 +379,11 @@ export function useRecordsByDateRange(startDate: string, endDate: string, limit?
     loadRecords();
   }, [loadRecords]);
 
-  return {
+  return useMemo(() => ({
     records,
     loading,
     error,
     refresh: loadRecords,
     count: records.length,
-  };
+  }), [records, loading, error, loadRecords]);
 }

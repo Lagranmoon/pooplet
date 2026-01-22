@@ -66,7 +66,7 @@ export type UpdateRecordRequest = Database['public']['Tables']['bowel_movements'
 // API 响应类型
 export interface ApiResponse<T> {
   data: T | null;
-  error: string | null;
+  error: string | DatabaseError | null;
   success: boolean;
 }
 

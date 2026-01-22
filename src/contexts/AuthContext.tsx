@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, memo } from 'react';
 import type { ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import type { UseAuthReturn } from '../hooks/useAuth';
@@ -11,7 +11,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = memo(({ children }) => {
   const auth = useAuth();
 
   return (
@@ -19,7 +19,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+});
+
+AuthProvider.displayName = 'AuthProvider';
 
 // 使用认证上下文的 Hook
 export const useAuthContext = (): UseAuthReturn => {

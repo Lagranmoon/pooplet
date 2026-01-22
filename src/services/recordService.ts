@@ -130,10 +130,7 @@ export class RecordService {
       if (authError || !user) {
         return {
           data: null,
-          error: {
-            code: 'AUTH_ERROR',
-            message: '用户未登录',
-          },
+          error: validationErrors.join('; '),
         };
       }
 

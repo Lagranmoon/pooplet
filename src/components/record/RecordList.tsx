@@ -1,14 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { recordService } from '../../services/recordService';
 import type { BowelMovementRecord, PaginatedResponse } from '../../types/database';
 import { BRISTOL_STOOL_DESCRIPTIONS } from '../../types/database';
 
+// 静态图标组件
+const EmptyIcon = () => (
+  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+
+const ErrorIcon = () => (
+  <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const SpinnerIcon = () => (
+  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </svg>
+);
+
 interface RecordListProps {
-  refreshTrigger?: number; // 用于触发刷新
+  refreshTrigger?: number;
   onEdit?: (record: BowelMovementRecord) => void;
   onDelete?: (record: BowelMovementRecord) => void;
   className?: string;
 }
+
+// 提取昂贵的计算逻辑
+const groupRecordsByDate = (records: BowelMovementRecord[]) => {
+  if (!records?.length) return [];
+  
+  const grouped: { [key: string]: BowelMovementRecord[] } = {};
+  
+  records.forEach(record => {
+    const date = new Date(record.occurred_at).toDateString();
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(record);
+  });
+
+  return Object.entries(grouped).sort(([a], [b]) => 
+    new Date(b).getTime() - new Date(a).getTime()
+  ) as [string, BowelMovementRecord[]][];
+};
+
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const getQualityColor = (rating: number) => {
+  if (rating <= 2) return 'text-red-600 bg-red-100';
+  if (rating <= 4) return 'text-green-600 bg-green-100';
+  return 'text-yellow-600 bg-yellow-100';
+};
 
 export const RecordList: React.FC<RecordListProps> = ({
   refreshTrigger = 0,
@@ -23,51 +79,56 @@ export const RecordList: React.FC<RecordListProps> = ({
     data: [],
     count: 0,
     hasMore: false,
+    page: 0,
+    limit: 10,
+    error: null,
+    success: true,
   });
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
 
-  const loadRecords = async (page: number = 0, append: boolean = false) => {
+  const loadRecords = useCallback(async (page: number = 0, append: boolean = false) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const result = await recordService.getRecords({
+      const paginatedResult = await recordService.getRecords({
         limit: pageSize,
         offset: page * pageSize,
         orderBy: 'occurred_at',
         orderDirection: 'desc',
       });
 
-      // getRecords 返回 PaginatedResponse<BowelMovementRecord>
-      const paginatedResult = result as PaginatedResponse<BowelMovementRecord>;
+      // 早期返回如果数据为空
+      if (!paginatedResult?.data) {
+        setRecords([]);
+        setPagination(paginatedResult);
+        return;
+      }
+
       if (append) {
-        setRecords(prev => [...prev, ...paginatedResult.data]);
+        setRecords(prev => [...prev, ...(paginatedResult.data || [])]);
       } else {
-        setRecords(paginatedResult.data);
+        setRecords(paginatedResult.data || []);
       }
       setPagination(paginatedResult);
     } catch (err) {
-      setError('加载记录失败，请稍后重试');
+      setError(err instanceof Error ? err.message : '加载记录失败，请稍后重试');
       console.error('Error loading records:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [pageSize]);
 
-  useEffect(() => {
-    loadRecords(0, false);
-  }, [refreshTrigger]);
-
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (pagination.hasMore && !isLoading) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
       loadRecords(nextPage, true);
     }
-  };
+  }, [pagination.hasMore, isLoading, currentPage, loadRecords]);
 
-  const handleDelete = async (record: BowelMovementRecord) => {
+  const handleDelete = useCallback(async (record: BowelMovementRecord) => {
     if (!window.confirm('确定要删除这条记录吗？此操作无法撤销。')) {
       return;
     }
@@ -75,50 +136,24 @@ export const RecordList: React.FC<RecordListProps> = ({
     try {
       const result = await recordService.deleteRecord(record.id);
       if (result.error) {
-        setError(result.error.message);
+        setError(result.error);
       } else {
         // 从列表中移除记录
         setRecords(prev => prev.filter(r => r.id !== record.id));
         onDelete?.(record);
       }
     } catch (err) {
-      setError('删除失败，请稍后重试');
+      setError(err instanceof Error ? err.message : '删除失败，请稍后重试');
     }
-  };
+  }, [onDelete]);
 
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  useEffect(() => {
+    loadRecords(0, false);
+  }, [refreshTrigger, loadRecords]);
 
-  const getQualityColor = (rating: number) => {
-    if (rating <= 2) return 'text-red-600 bg-red-100';
-    if (rating <= 4) return 'text-green-600 bg-green-100';
-    return 'text-yellow-600 bg-yellow-100';
-  };
+  const groupedRecords = useMemo(() => groupRecordsByDate(records), [records]);
 
-  const groupRecordsByDate = (records: BowelMovementRecord[]) => {
-    const grouped: { [key: string]: BowelMovementRecord[] } = {};
-    
-    records.forEach(record => {
-      const date = new Date(record.occurred_at).toDateString();
-      if (!grouped[date]) {
-        grouped[date] = [];
-      }
-      grouped[date].push(record);
-    });
-
-    return Object.entries(grouped).sort(([a], [b]) => 
-      new Date(b).getTime() - new Date(a).getTime()
-    ) as [string, BowelMovementRecord[]][];
-  };
-
+  // 早期返回如果数据为空
   if (isLoading && records.length === 0) {
     return (
       <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
@@ -139,9 +174,7 @@ export const RecordList: React.FC<RecordListProps> = ({
       <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
         <div className="text-center">
           <div className="text-red-600 mb-2">
-            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <ErrorIcon />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">加载失败</h3>
           <p className="text-gray-600 mb-4">{error}</p>
@@ -161,9 +194,7 @@ export const RecordList: React.FC<RecordListProps> = ({
       <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
         <div className="text-center">
           <div className="text-gray-400 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <EmptyIcon />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">还没有记录</h3>
           <p className="text-gray-600">开始记录您的排便信息吧！</p>
@@ -171,8 +202,6 @@ export const RecordList: React.FC<RecordListProps> = ({
       </div>
     );
   }
-
-  const groupedRecords = groupRecordsByDate(records) as [string, BowelMovementRecord[]][];
 
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
@@ -268,10 +297,7 @@ export const RecordList: React.FC<RecordListProps> = ({
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <SpinnerIcon />
                 加载中...
               </>
             ) : (
@@ -284,4 +310,5 @@ export const RecordList: React.FC<RecordListProps> = ({
   );
 };
 
-export default RecordList;
+// 使用memo包装组件以优化重渲染
+export default memo(RecordList);
