@@ -1,0 +1,11 @@
+FROM postgres:16-alpine
+
+ENV POSTGRES_USER=pooplet
+ENV POSTGRES_PASSWORD=pooplet_password
+ENV POSTGRES_DB=pooplet
+
+# Expose PostgreSQL to the host machine
+EXPOSE 5432
+
+# Optional: Set timezone
+# ENV TZ=Asia/Shanghai

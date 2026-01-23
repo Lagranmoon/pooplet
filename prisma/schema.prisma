@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  records       Record[]
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("pooplet_user")
+}
+
+model Record {
+  id             String    @id @default(cuid())
+  userId         String    @map("user_id")
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  occurredAt     DateTime  @map("occurred_at")
+  qualityRating  Int       @map("quality_rating")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId(sort: Desc), occurredAt(sort: Desc)], name: "idx_pooplet_record_user_covering")
+  @@index([occurredAt, qualityRating], name: "idx_pooplet_record_date_quality")
+  @@index([userId, occurredAt], name: "idx_pooplet_record_daily_stats")
+  @@map("pooplet_record")
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String    @unique
+  expiresAt    DateTime  @map("expires_at")
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("pooplet_session")
+}
+
+model Account {
+  id             String  @id @default(cuid())
+  accountId      String  @map("account_id")
+  userId         String  @map("user_id")
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId     String  @map("provider_id")
+  providerUserId String? @map("provider_user_id")
+  password       String?
+  accessToken    String? @map("access_token")
+  refreshToken   String? @map("refresh_token")
+  expiresAt      DateTime? @map("expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([providerId, providerUserId], name: "provider_user_id_unique")
+  @@index([userId])
+  @@map("pooplet_account")
+}

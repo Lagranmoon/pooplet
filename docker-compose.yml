@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: pooplet-postgres
+    environment:
+      POSTGRES_USER: pooplet
+      POSTGRES_PASSWORD: pooplet_password
+      POSTGRES_DB: pooplet
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pooplet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - pooplet-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pooplet-app
+    environment:
+      DATABASE_URL: postgresql://pooplet:pooplet_password@postgres:5432/pooplet
+      BETTER_AUTH_SECRET: better-auth-secret-key-at-least-32-characters-long
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: production
+    ports:
+      - "80:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pooplet-network
+
+networks:
+  pooplet-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
