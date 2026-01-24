@@ -1,3 +1,12 @@
+/**
+ * API 响应格式化工具
+ *
+ * 提供标准化的 API 响应格式，包括分页响应和错误处理
+ * 确保前端和后端之间数据交互的一致性
+ *
+ * @path /lib/api-responses.ts
+ * @author Auto-generated
+ */
 import type { RecordsResponse } from "@/types/api-responses";
 
 interface ApiResponse<T> {

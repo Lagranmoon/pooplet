@@ -1,3 +1,12 @@
+/**
+ * 概览统计端点
+ *
+ * 提供用户的健康数据概览统计
+ * 包括总记录数、日均次数、最常见质量等指标
+ *
+ * @path /app/api/stats/overview/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";

@@ -1,3 +1,12 @@
+/**
+ * 记录表单组件
+ *
+ * 用于创建和显示健康记录的表单组件
+ * 支持乐观更新和本地状态管理
+ *
+ * @path /components/records/RecordForm.tsx
+ * @author Auto-generated
+ */
 "use client"
 
 import { useState } from "react";

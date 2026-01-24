@@ -1,3 +1,12 @@
+/**
+ * 邮箱注册端点
+ *
+ * 处理用户邮箱密码注册请求
+ * 支持环境变量控制注册功能的启用/禁用
+ *
+ * @path /app/api/auth/sign-up/email/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { rateLimiter, getClientIP } from "@/lib/rate-limiter";
 import { NextRequest } from "next/server";

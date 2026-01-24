@@ -1,3 +1,12 @@
+/**
+ * 仪表板布局组件
+ *
+ * 仪表板区域的共享布局，包含导航栏和用户信息
+ * 提供记录、所有记录、统计等导航链接
+ *
+ * @path /app/(dashboard)/layout.tsx
+ * @author Auto-generated
+ */
 "use client";
 
 import { authClient } from "@/lib/auth-client";

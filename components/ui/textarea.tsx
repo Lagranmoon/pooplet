@@ -1,3 +1,13 @@
+/**
+ * 文本域组件
+ *
+ * 多行文本输入组件，用于接收较长的用户输入
+ * 支持自动调整高度和自定义样式
+ * 
+ * @path /components/ui/textarea.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 

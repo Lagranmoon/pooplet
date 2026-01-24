@@ -1,3 +1,13 @@
+/**
+ * 用户注册页面
+ *
+ * 新用户注册界面，包含邮箱、昵称和密码输入
+ * 支持注册开关控制，表单验证和错误提示
+ * 
+ * @path /app/(auth)/register/page.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import { signUp } from "../../../lib/auth-client";

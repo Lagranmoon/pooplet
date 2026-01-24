@@ -1,3 +1,12 @@
+/**
+ * 用户登出端点
+ *
+ * 处理用户登出请求，清除客户端和服务端会话
+ * 重定向到登录页面
+ *
+ * @path /app/api/auth/signout/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 

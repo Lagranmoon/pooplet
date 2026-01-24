@@ -1,3 +1,13 @@
+/**
+ * 输入框组件
+ *
+ * 通用单行文本输入组件
+ * 支持多种输入类型和自定义样式
+ * 
+ * @path /components/ui/input.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 

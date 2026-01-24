@@ -1,3 +1,12 @@
+/**
+ * Better-Auth 认证配置
+ *
+ * 配置 better-auth 认证服务，包括数据库适配器、邮件密码登录、会话管理等
+ * 使用 PostgreSQL 数据库和 Next.js cookies 插件
+ *
+ * @path /lib/auth.ts
+ * @author Auto-generated
+ */
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";

@@ -1,3 +1,12 @@
+/**
+ * 记录操作 Server Actions
+ *
+ * 提供记录的创建、更新、删除和批量删除操作
+ * 使用 Next.js Server Actions 进行服务端数据处理
+ *
+ * @path /app/actions/recordActions.ts
+ * @author Auto-generated
+ */
 "use server";
 
 import { auth } from "@/lib/auth";

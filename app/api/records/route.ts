@@ -1,3 +1,12 @@
+/**
+ * 记录 API 端点
+ *
+ * 处理记录的 CRUD 操作：获取列表、创建记录、批量删除
+ * 支持分页、日期范围过滤和用户权限验证
+ *
+ * @path /app/api/records/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";

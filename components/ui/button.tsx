@@ -1,3 +1,9 @@
+/**
+ * 按钮组件
+ * 基于 Radix UI Slot 和 CVA 的可定制按钮组件
+ * @path /components/ui/button.tsx
+ * @author Auto-generated
+ */
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -32,7 +38,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonVariants> {
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

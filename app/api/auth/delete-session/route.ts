@@ -1,3 +1,12 @@
+/**
+ * 删除会话端点
+ *
+ * 删除当前用户的认证会话（登出）
+ * 清除服务器端的会话数据
+ *
+ * @path /app/api/auth/delete-session/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 

@@ -1,3 +1,13 @@
+/**
+ * 用户登录页面
+ *
+ * 用户登录界面，支持邮箱密码登录
+ * 包含表单验证、错误提示和成功重定向
+ * 
+ * @path /app/(auth)/login/page.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import { signIn } from "../../../lib/auth-client";

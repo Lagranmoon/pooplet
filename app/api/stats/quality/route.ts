@@ -1,3 +1,12 @@
+/**
+ * 质量分布统计端点
+ *
+ * 提供用户的质量评分分布数据
+ * 返回各质量级别的记录数、总数和最常见质量
+ *
+ * @path /app/api/stats/quality/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";

@@ -1,3 +1,12 @@
+/**
+ * 核心类型定义
+ *
+ * 定义应用中使用的核心数据类型，包括用户、记录、会话等
+ * 提供类型安全和 IntelliSense 支持
+ *
+ * @path /types/index.ts
+ * @author Auto-generated
+ */
 export type User = {
   id: string;
   email: string;

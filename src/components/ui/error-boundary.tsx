@@ -1,3 +1,14 @@
+/**
+ * 错误边界组件
+ *
+ * 捕获子组件树中的 JavaScript 错误
+ * 提供页面级、组件级和段落级三种错误处理模式
+ * 开发环境下显示详细错误信息
+ * 
+ * @path /src/components/ui/error-boundary.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import React from "react";

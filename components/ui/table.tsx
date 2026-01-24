@@ -1,3 +1,13 @@
+/**
+ * 表格组件集
+ *
+ * 包含表格及其所有子组件（Table, TableHeader, TableBody 等）
+ * 用于展示结构化的数据列表
+ * 
+ * @path /components/ui/table.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
 

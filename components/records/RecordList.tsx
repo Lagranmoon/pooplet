@@ -1,3 +1,12 @@
+/**
+ * 记录列表组件
+ *
+ * 以表格形式展示健康记录，支持添加和删除操作
+ * 使用乐观更新提升用户体验
+ *
+ * @path /components/records/RecordList.tsx
+ * @author Auto-generated
+ */
 "use client";
 
 import { useState, useOptimistic } from "react";

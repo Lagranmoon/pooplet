@@ -1,3 +1,12 @@
+/**
+ * 频率统计端点
+ *
+ * 提供用户近30天的排便频率统计数据
+ * 按日期聚合，返回每日记录数和平均质量
+ *
+ * @path /app/api/stats/frequency/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";

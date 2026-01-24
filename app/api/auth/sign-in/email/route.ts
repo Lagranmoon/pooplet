@@ -1,3 +1,12 @@
+/**
+ * 邮箱登录端点
+ *
+ * 处理用户邮箱密码登录请求
+ * 包含速率限制和输入验证
+ *
+ * @path /app/api/auth/sign-in/email/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { rateLimiter, getClientIP } from "@/lib/rate-limiter";
 import { NextRequest } from "next/server";

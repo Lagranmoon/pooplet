@@ -1,3 +1,12 @@
+/**
+ * API 数据类型定义
+ *
+ * 定义 API 返回的数据结构和查询参数
+ * 包括记录行、统计信息、分页响应等类型
+ *
+ * @path /types/api-types.ts
+ * @author Auto-generated
+ */
 export interface RecordRow {
   id: string;
   user_id: string;

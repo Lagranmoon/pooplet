@@ -1,3 +1,13 @@
+/**
+ * 确认对话框组件
+ *
+ * 用于需要用户确认的操作提示
+ * 包含标题、描述、确认和取消按钮
+ * 
+ * @path /src/components/ui/confirm-dialog.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import type { ReactNode } from "react";

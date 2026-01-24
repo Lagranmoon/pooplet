@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * 用户删除管理脚本
+ *
+ * 命令行工具，用于删除用户及其相关数据
+ * 支持通过邮箱或用户ID查找用户，并强制删除选项
+ *
+ * @path /scripts/delete-user.ts
+ * @author Auto-generated
+ */
 import { prisma } from "../lib/db";
 import { auth } from "../lib/auth";
 

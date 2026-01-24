@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * 密码重置管理脚本
+ *
+ * 命令行工具，用于重置用户密码
+ * 支持通过邮箱或用户ID查找用户，并自动生成或指定新密码
+ *
+ * @path /scripts/reset-password.ts
+ * @author Auto-generated
+ */
 import { prisma } from "../lib/db";
 import { auth } from "../lib/auth";
 

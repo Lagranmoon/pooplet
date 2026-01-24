@@ -1,3 +1,12 @@
+/**
+ * 每日统计端点
+ *
+ * 提供按日期统计的用户健康数据
+ * 包括每日记录数、平均/最小/最大质量等指标
+ *
+ * @path /app/api/stats/daily/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";

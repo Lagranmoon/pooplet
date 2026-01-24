@@ -1,3 +1,12 @@
+/**
+ * API 请求限流工具
+ *
+ * 基于内存的速率限制器，用于保护 API 端点免受滥用
+ * 提供默认和严格两种限流策略，支持获取客户端真实 IP
+ *
+ * @path /lib/rate-limiter.ts
+ * @author Auto-generated
+ */
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 const isDevelopment = process.env.NODE_ENV === 'development';

@@ -1,3 +1,13 @@
+/**
+ * 卡片组件
+ *
+ * 基于 React forwardRef 的可复用卡片容器组件
+ * 用于包裹内容并提供统一的样式容器
+ * 
+ * @path /components/ui/card.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react"
 import { cn } from "@/lib/utils";
 

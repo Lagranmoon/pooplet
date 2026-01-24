@@ -1,3 +1,12 @@
+/**
+ * 认证页面布局组件
+ *
+ * 登录和注册页面的共享布局
+ * 提供统一的背景和样式
+ *
+ * @path /app/(auth)/layout.tsx
+ * @author Auto-generated
+ */
 export default function AuthLayout({
   children,
 }: {

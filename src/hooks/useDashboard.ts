@@ -1,3 +1,12 @@
+/**
+ * 自定义 React Hooks 集合
+ *
+ * 提供多个自定义 Hook 用于记录管理、表单处理、认证等
+ * 包含状态管理、数据获取和工具函数
+ *
+ * @path /src/hooks/useDashboard.ts
+ * @author Auto-generated
+ */
 import { useState, useCallback, useMemo, useEffect } from "react";
 
 // 类型定义

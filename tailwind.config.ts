@@ -1,3 +1,12 @@
+/**
+ * Tailwind CSS 配置文件
+ *
+ * 定义 Tailwind CSS 的主题、插件和自定义配置
+ * 包含颜色、动画、圆角等设计系统
+ *
+ * @path /tailwind.config.ts
+ * @author Auto-generated
+ */
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 

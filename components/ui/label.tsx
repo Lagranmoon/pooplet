@@ -1,3 +1,13 @@
+/**
+ * 标签组件
+ *
+ * 用于表单输入元素的关联标签
+ * 支持禁用状态和自定义样式
+ * 
+ * @path /components/ui/label.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react"
 import { cn } from "@/lib/utils";
 

@@ -1,3 +1,13 @@
+/**
+ * 仪表板首页
+ *
+ * 显示今日记录、最近记录和快速添加记录功能
+ * 包含状态管理、性能优化和错误处理
+ * 
+ * @path /app/(dashboard)/dashboard/page.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import React, { Suspense, useCallback, useMemo, useReducer, useEffect, memo } from "react";

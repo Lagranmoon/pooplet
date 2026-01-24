@@ -1,3 +1,12 @@
+/**
+ * 根布局组件
+ *
+ * 应用的全局布局，包含 HTML 结构、字体配置和元数据
+ * 所有页面共享的基础布局
+ *
+ * @path /app/layout.tsx
+ * @author Auto-generated
+ */
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

@@ -1,3 +1,12 @@
+/**
+ * Prisma 数据库客户端实例
+ *
+ * 创建并导出 Prisma 客户端单例，用于与 PostgreSQL 数据库交互
+ * 在开发环境中启用查询日志记录，生产环境中避免重复创建实例
+ *
+ * @path /lib/db.ts
+ * @author Auto-generated
+ */
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 

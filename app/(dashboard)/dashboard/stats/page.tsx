@@ -1,3 +1,14 @@
+/**
+ * 健康统计页面
+ *
+ * 显示用户健康数据的可视化统计图表
+ * 包含频率趋势、质量分布和质量趋势等图表
+ * 使用 Recharts 库进行数据可视化
+ * 
+ * @path /app/(dashboard)/dashboard/stats/page.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import { useSession } from "@/lib/auth-client";

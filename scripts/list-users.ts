@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * 用户列表管理脚本
+ *
+ * 命令行工具，用于列出和查看系统中的所有用户信息
+ * 支持表格和 JSON 两种输出格式
+ *
+ * @path /scripts/list-users.ts
+ * @author Auto-generated
+ */
 import { prisma } from "../lib/db";
 
 interface ListUsersOptions {

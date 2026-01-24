@@ -1,3 +1,12 @@
+/**
+ * 单个记录 API 端点
+ *
+ * 处理单个记录的 CRUD 操作：获取详情、更新、删除
+ * 使用动态路由参数 ID 确保用户只能操作自己的记录
+ *
+ * @path /app/api/records/[id]/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";

@@ -1,3 +1,13 @@
+/**
+ * 表单组件
+ *
+ * 表单容器组件，提供统一的间距和布局
+ * 可与 Label、Input 等组件配合使用
+ * 
+ * @path /components/ui/form.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 

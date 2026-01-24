@@ -1,3 +1,12 @@
+/**
+ * 首页组件
+ *
+ * 应用的入口页面，根据用户认证状态进行重定向
+ * 已登录用户跳转到仪表板，未登录用户跳转到登录页
+ *
+ * @path /app/page.tsx
+ * @author Auto-generated
+ */
 "use client";
 
 import { useEffect } from "react";

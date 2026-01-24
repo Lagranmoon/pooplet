@@ -1,3 +1,13 @@
+/**
+ * 记录列表页面
+ *
+ * 显示所有健康记录，支持分页浏览和删除操作
+ * 包含表格展示、分页控制和确认删除对话框
+ * 
+ * @path /app/(dashboard)/dashboard/records/page.tsx
+ * @author Auto-generated
+ */
+
 "use client";
 
 import { useSession } from "@/lib/auth-client";

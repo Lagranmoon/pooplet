@@ -1,3 +1,13 @@
+/**
+ * 徽章组件
+ *
+ * 用于显示状态、标签或分类的小型标识组件
+ * 支持多种变体和自定义样式
+ * 
+ * @path /components/ui/badge.tsx
+ * @author Auto-generated
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"

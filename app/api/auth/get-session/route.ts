@@ -1,3 +1,12 @@
+/**
+ * 获取当前会话端点
+ *
+ * 获取当前用户的认证会话信息
+ * 返回用户数据和会话状态
+ *
+ * @path /app/api/auth/get-session/route.ts
+ * @author Auto-generated
+ */
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 
