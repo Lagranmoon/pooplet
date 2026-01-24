@@ -3,9 +3,9 @@ set -e
 
 run_migrations() {
     echo "Running database migrations..."
-    cd /app
+    cd /app/standalone
 
-    if npx prisma migrate deploy --schema prisma/schema.prisma; then
+    if npx prisma migrate deploy; then
         echo "Migrations completed successfully"
         return 0
     fi
@@ -30,11 +30,8 @@ health_check() {
 
 start_app() {
     echo "Starting application..."
-    if [ -f "server.js" ]; then
-        exec node server.js
-    else
-        exec node .next/standalone/server.js
-    fi
+    cd /app/standalone
+    exec node server.js
 }
 
 trap 'echo "Received SIGTERM, shutting down gracefully..."; kill -TERM $APP_PID; wait $APP_PID' TERM

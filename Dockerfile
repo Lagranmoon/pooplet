@@ -16,6 +16,12 @@ RUN npm ci && \
     DATABASE_URL="postgresql://placeholder:placeholder@placeholder:5432/placeholder" npx prisma generate && \
     NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 npm run build && \
     npm cache clean --force && \
+    mkdir -p /app/standalone && \
+    cp -r /app/.next/standalone/* /app/standalone/ && \
+    cp -r /app/.next/static /app/standalone/.next/ && \
+    cp -r /app/public /app/standalone/ 2>/dev/null || true && \
+    cp -r /app/prisma /app/standalone/ && \
+    cp /app/prisma.config.ts /app/standalone/ && \
     chown -R nextjs:nodejs /app
 
 COPY --chown=nextjs:nodejs docker-entrypoint.sh /docker-entrypoint.sh
