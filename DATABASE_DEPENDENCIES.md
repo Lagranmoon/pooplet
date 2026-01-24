@@ -104,8 +104,15 @@ export const prisma = new PrismaClient({
 DB_NAME=pooplet_dev
 DB_USER=pooplet
 DB_PASSWORD=devpassword
-DATABASE_URL="postgresql://pooplet:devpassword@localhost:5432/pooplet_dev?schema=public"
+DATABASE_URL="postgresql://pooplet:devpassword@postgres:5432/pooplet_dev?schema=public"
 ```
+
+### Docker环境连接说明
+在Docker环境中，数据库连接配置如下：
+- **数据库地址**: `postgres` (Docker服务名)
+- **端口**: 5432 (仅Docker内部网络)
+- **安全性**: 数据库不对外暴露端口
+- **连接字符串**: 使用服务名而非localhost
 
 ## 🚀 命令
 

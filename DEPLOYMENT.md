@@ -34,6 +34,7 @@ cp .env.example .env
 DB_NAME=pooplet
 DB_USER=pooplet
 DB_PASSWORD=your_secure_db_password_here
+DATABASE_URL="postgresql://pooplet:your_secure_db_password_here@postgres:5432/pooplet?schema=public"
 
 # Application Configuration
 NODE_ENV=production
@@ -72,6 +73,20 @@ docker-compose ps
 # 查看日志
 docker-compose logs -f
 ```
+
+### 5. 数据库连接说明
+
+**重要**: 应用通过Docker内部网络连接到数据库：
+- **数据库地址**: `postgres` (Docker服务名，不是localhost)
+- **端口**: 5432 (仅Docker内部访问)
+- **外部访问**: 数据库不对外暴露端口，确保安全性
+
+确保`.env`文件中的`DATABASE_URL`配置为：
+```
+DATABASE_URL="postgresql://pooplet:password@postgres:5432/pooplet?schema=public"
+```
+
+**不要使用** `localhost:5432`，这在Docker环境中无效。
 
 ## 架构说明
 
