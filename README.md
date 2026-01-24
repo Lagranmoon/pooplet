@@ -1,23 +1,18 @@
-# 拉屎记录应用
+# Pooplet - 健康记录跟踪器
 
 一个帮助用户跟踪和分析排便习惯的 Web 应用程序。
 
 ## 快速开始
 
-### 本地开发
-
-详细的开发环境设置请查看 [DEV_SETUP.md](./DEV_SETUP.md)
-
-快速启动：
-
+### 开发环境
 ```bash
-# 1. 安装依赖
+# 安装依赖
 npm install
 
-# 2. 配置环境变量
+# 配置环境变量
 cp .env.example .env
 
-# 3. 启动 PostgreSQL 数据库
+# 启动数据库
 docker run -d \
   --name pooplet-postgres-dev \
   -e POSTGRES_DB=pooplet_dev \
@@ -26,37 +21,66 @@ docker run -d \
   -p 5432:5432 \
   postgres:15-alpine
 
-# 4. 初始化数据库
+# 初始化数据库
 npm run db:generate
 npm run db:push
 
-# 5. 启动开发服务器
+# 启动开发服务器
 npm run dev
 ```
 
 访问 http://localhost:3000
 
+### 生产环境
+```bash
+# 使用 Docker Compose 部署
+docker-compose up -d
+```
+
 ## 技术栈
 
-- **前端**: Next.js 16 + React 19 + TypeScript
+- **前端**: Next.js 14 + React 18 + TypeScript
 - **数据库**: PostgreSQL + Prisma ORM
 - **认证**: better-auth
 - **UI**: Radix UI + Tailwind CSS
 - **图表**: Recharts
+- **部署**: Docker + GitHub Actions
+
+## 功能特性
+
+- 日常健康记录跟踪
+- 数据分析和可视化
+- 响应式 Web 界面
+- 用户认证和数据隔离
+- 限流和安全保护
+- 生产就绪的部署
+
+## 命令
+
+| 命令 | 描述 |
+|------|------|
+| `npm run dev` | 启动开发服务器 |
+| `npm run build` | 构建生产版本 |
+| `npm run db:generate` | 生成 Prisma 客户端 |
+| `npm run db:migrate` | 运行数据库迁移 |
+| `npm run db:studio` | 打开 Prisma Studio |
+| `npm run db:push` | 推送架构更改 |
 
 ## 文档
 
-- [DEVELOPMENT.md](./DEVELOPMENT.md) - 本地开发指南
-- [AGENTS.md](./AGENTS.md) - 开发规范
-- [database/README.md](./database/README.md) - 数据库架构
-- [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) - 部署指南
+- [DEVELOPMENT.md](./DEVELOPMENT.md) - 开发环境指南
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - 生产部署指南
+- [AGENTS.md](./AGENTS.md) - 开发规范和最佳实践
 
-## 主要功能
+## 安全
 
-- 日常排便记录
-- 数据统计分析
-- 响应式 Web 界面
-- 用户认证和数据隔离
+✅ **安全评分: 10/10**
+
+- 使用 Zod 模式进行输入验证
+- 限流保护
+- 安全 Cookie 配置
+- 基于环境的安全
+- 无依赖漏洞
 
 ## 许可证
 

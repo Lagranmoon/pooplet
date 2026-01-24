@@ -1,63 +1,63 @@
-# Development Guidelines for Bowel Movement Tracker
+# 排便跟踪器开发指南
 
-This document provides comprehensive guidelines for AI agents working on this Next.js + React + TypeScript + Prisma project.
+本文档为 AI 代理在此 Next.js + React + TypeScript + Prisma 项目中工作提供全面的指导。
 
-## Build, Lint, and Test Commands
+## 构建、代码检查和测试命令
 
-### Development
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
+### 开发
+- `npm run dev` - 启动开发服务器
+- `npm run build` - 构建生产版本
+- `npm run preview` - 预览生产构建
 
-### Linting
-- `npm run lint` - Run ESLint on all files (TypeScript + React rules)
+### 代码检查
+- `npm run lint` - 对所有文件运行 ESLint（TypeScript + React 规则）
 
-### Testing
-- `npm run test` - Run tests in watch mode
-- `npm run test:run` - Run tests once (CI mode)
-- `npm run test:ui` - Run tests with UI interface
-- `npm run test:rls` - Test RLS policies
-- **Single test:** `npm run test filename.test.ts` or `npm run test -- filename.test.ts`
-- **Single test method:** `npm run test -- --reporter=verbose filename.test.ts -t "test name"`
+### 测试
+- `npm run test` - 以监视模式运行测试
+- `npm run test:run` - 运行一次测试（CI 模式）
+- `npm run test:ui` - 使用 UI 界面运行测试
+- `npm run test:rls` - 测试 RLS 策略
+- **单文件测试:** `npm run test filename.test.ts`
+- **单测试方法:** `npm run test -- --reporter=verbose filename.test.ts -t "test name"`
 
-## Code Style Guidelines
+## 代码风格指南
 
-### Import Guidelines
+### 导入指南
 ```typescript
-// External libraries first (alphabetical)
+// 外部库优先（按字母顺序）
 import { useState, useEffect } from 'react';
 import { prisma } from '@/lib/prisma';
 
-// Internal imports (relative paths)
+// 内部导入（相对路径）
 import { auth } from '@/lib/auth';
 import type { Record } from '@prisma/client';
 ```
 
-### File Organization
+### 文件组织
 ```
 src/
-├── components/     # Reusable UI components
-├── contexts/       # React contexts
-├── hooks/         # Custom React hooks
-├── pages/         # Route page components
-├── services/      # API and business logic
-├── types/         # TypeScript type definitions
-└── test/          # Test files and utilities
+├── components/     # 可复用 UI 组件
+├── contexts/       # React 上下文
+├── hooks/         # 自定义 React hooks
+├── pages/         # 路由页面组件
+├── services/      # API 和业务逻辑
+├── types/         # TypeScript 类型定义
+└── test/          # 测试文件和工具
 ```
 
-### Naming Conventions
+### 命名约定
 
-**Files & Components:**
-- PascalCase for React components: `RecordForm.tsx`
-- camelCase for utilities and hooks: `useAuth.ts`
-- snake_case for service files: `recordService.ts`
+**文件 & 组件:**
+- React 组件使用 PascalCase: `RecordForm.tsx`
+- 工具函数和 hooks 使用 camelCase: `useAuth.ts`
+- 服务文件使用 snake_case: `recordService.ts`
 
-**Variables & Functions:**
-- camelCase for variables and functions
-- PascalCase for types and interfaces
-- UPPER_CASE for constants
+**变量 & 函数:**
+- 变量和函数使用 camelCase
+- 类型和接口使用 PascalCase
+- 常量使用 UPPER_CASE
 
-**Interfaces & Types:**
+**接口 & 类型:**
 ```typescript
 export interface AuthState {
   user: User | null;
@@ -73,7 +73,7 @@ export interface BowelMovementRecord {
 }
 ```
 
-### React Patterns
+### React 模式
 
 **Hooks:**
 ```typescript
@@ -86,14 +86,14 @@ export const useAuth = (): UseAuthReturn => {
   });
 
   const signOut = useCallback(async () => {
-    // implementation
+    // 实现
   }, []);
 
   return { ...state, signOut };
 };
 ```
 
-**Component Structure:**
+**组件结构:**
 ```typescript
 interface ComponentProps {
   title: string;
@@ -111,9 +111,9 @@ const MyComponent: React.FC<ComponentProps> = ({ title, onSubmit }) => {
 export default MyComponent;
 ```
 
-### Error Handling
+### 错误处理
 
-**Service Layer:**
+**服务层:**
 ```typescript
 async createRecord(data: CreateRecordRequest): Promise<ApiResponse<Record>> {
   try {
@@ -128,12 +128,12 @@ async createRecord(data: CreateRecordRequest): Promise<ApiResponse<Record>> {
 
     return { success: true, data: result };
   } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : 'Database error' };
+    return { success: false, error: error instanceof Error ? error.message : '数据库错误' };
   }
 }
 ```
 
-**React Components:**
+**React 组件:**
 ```typescript
 const [error, setError] = useState<string | null>(null);
 
@@ -142,19 +142,19 @@ const handleSubmit = async (data: FormData) => {
     setError(null);
     await submitData(data);
   } catch (err) {
-    setError(err instanceof Error ? err.message : 'Unknown error');
+    setError(err instanceof Error ? err.message : '未知错误');
   }
 };
 ```
 
-### Database & Authentication
+### 数据库 & 认证
 
 **Prisma ORM:**
-- All database access should go through Prisma Client
-- User can only access their own records
-- Run migrations with `npm run db:migrate`
+- 所有数据库访问应通过 Prisma Client
+- 用户只能访问自己的记录
+- 使用 `npm run db:migrate` 运行迁移
 
-**Database Types:**
+**数据库类型:**
 ```typescript
 import { prisma } from '@/lib/prisma';
 import type { Record } from '@prisma/client';
@@ -166,31 +166,31 @@ const records = await prisma.record.findMany({
 ```
 
 **better-auth:**
-- Use better-auth for user authentication
-- Sessions are managed automatically
-- Auth routes should be created in `app/api/auth/...`
+- 使用 better-auth 进行用户认证
+- 会话自动管理
+- 认证路由应在 `app/api/auth/...` 中创建
 
-### Testing Standards
+### 测试标准
 
-**Test Structure:**
+**测试结构:**
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 describe('MyComponent', () => {
-  it('renders correctly', () => {
+  it('正确渲染', () => {
     render(<MyComponent title="Test" onSubmit={jest.fn()} />);
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
 });
 ```
 
-### Styling Guidelines
+### 样式指南
 
 **Tailwind CSS:**
-- Use utility classes for all styling
-- No custom CSS unless necessary
-- Responsive design with mobile-first approach
+- 所有样式使用工具类
+- 除非必要，不使用自定义 CSS
+- 移动优先的响应式设计
 
 ```tsx
 const Card: React.FC<Props> = ({ children }) => (
@@ -202,37 +202,36 @@ const Card: React.FC<Props> = ({ children }) => (
 );
 ```
 
-### Configuration
+### 配置
 
-**Key Files:**
-- `tsconfig.json` - TypeScript project references
-- `eslint.config.js` - ESLint flat config
-- `vitest.config.ts` - Test configuration
-- `tailwind.config.js` - Tailwind CSS setup
+**关键文件:**
+- `tsconfig.json` - TypeScript 项目引用
+- `eslint.config.js` - ESLint 扁平配置
+- `vitest.config.ts` - 测试配置
+- `tailwind.config.js` - Tailwind CSS 设置
 
-### Security Best Practices
+### 安全最佳实践
 
-**Environment Variables:**
-- Never commit `.env` files
-- Use `.env.example` for template
+**环境变量:**
+- 绝不对 `.env` 文件进行提交
+- 使用 `.env.example` 作为模板
 
-**Authentication:**
-- Always check user authentication before data access
-- Use better-auth for authentication and session management
+**认证:**
+- 在数据访问前始终检查用户认证
+- 使用 better-auth 进行认证和会话管理
 
-### Development Workflow
+### 开发工作流
 
-1. **Before committing:** Run `npm run lint` and `npm run test:run`
-2. **Code review:** Ensure all tests pass
-3. **Performance:** Monitor bundle size and load times
-4. **Accessibility:** Use semantic HTML and ARIA labels
+1. **提交前:** 运行 `npm run lint` 和 `npm run test:run`
+2. **代码审查:** 确保所有测试通过
+3. **性能:** 监控包大小和加载时间
+4. **可访问性:** 使用语义 HTML 和 ARIA 标签
 
-### Key Dependencies
+### 关键依赖
 
-- React 19 + TypeScript
-- Vite for bundling
-- Next.js 16 for full-stack framework
-- Prisma for database ORM
-- better-auth for authentication
-- Tailwind CSS for styling
-- Vitest for testing
+- React 18 + TypeScript
+- Next.js 14 全栈框架
+- Prisma 数据库 ORM
+- better-auth 认证
+- Tailwind CSS 样式
+- Vitest 测试
