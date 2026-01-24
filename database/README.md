@@ -113,7 +113,11 @@
 创建 `.env` 文件并配置数据库连接：
 
 ```bash
-DATABASE_URL="postgresql://user:password@localhost:5432/pooplet"
+# Database Configuration
+DB_NAME=pooplet
+DB_USER=pooplet
+DB_PASSWORD=your_secure_password
+DATABASE_URL="postgresql://pooplet:your_secure_password@localhost:5432/pooplet?schema=public"
 ```
 
 ### 数据库迁移

@@ -44,14 +44,28 @@ cp .env.example .env
 创建开发环境的 `.env` 文件：
 
 ```env
-# Database Configuration
-DATABASE_URL="postgresql://pooplet:devpassword@localhost:5432/pooplet_dev"
+# Development Environment Variables
 
-# Auth Configuration
-BETTER_AUTH_SECRET="dev-secret-key-change-in-production-min-32-chars"
-BETTER_AUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# Database Configuration
+DB_NAME=pooplet_dev
+DB_USER=pooplet
+DB_PASSWORD=devpassword
+DATABASE_URL="postgresql://pooplet:devpassword@localhost:5432/pooplet_dev?schema=public"
+
+# Application Configuration
+NODE_ENV=development
+APP_URL=http://localhost:3000
 DISABLE_REGISTRATION=false
+
+# Authentication Security
+BETTER_AUTH_SECRET=dev-secret-key-change-in-production-minimum-32-chars
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+BETTER_AUTH_SECURE=false
+
+# Development Settings
+ENABLE_RATE_LIMITING=false
+NEXT_TELEMETRY_DISABLED=1
 ```
 
 ### 4. 启动 PostgreSQL 数据库

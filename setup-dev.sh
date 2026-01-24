@@ -33,17 +33,28 @@ if [ ! -f .env ]; then
 
   # 更新 .env 文件
   cat > .env << EOF
-# Database Configuration
-DATABASE_URL="postgresql://pooplet:devpassword@localhost:5432/pooplet_dev"
+# Development Environment Variables
 
-# Auth Configuration
-BETTER_AUTH_SECRET="$BETTER_AUTH_SECRET"
-BETTER_AUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# Database Configuration
+DB_NAME=pooplet_dev
+DB_USER=pooplet
+DB_PASSWORD=devpassword
+DATABASE_URL="postgresql://pooplet:devpassword@localhost:5432/pooplet_dev?schema=public"
+
+# Application Configuration
+NODE_ENV=development
+APP_URL=http://localhost:3000
 DISABLE_REGISTRATION=false
 
-# Development
-NODE_ENV=development
+# Authentication Security
+BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+BETTER_AUTH_SECURE=false
+
+# Development Settings
+ENABLE_RATE_LIMITING=false
+NEXT_TELEMETRY_DISABLED=1
 EOF
 
   echo "✅ .env 文件已创建"
