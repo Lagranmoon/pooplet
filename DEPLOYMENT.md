@@ -30,14 +30,28 @@ cp .env.example .env
 编辑 `.env` 文件，设置生产环境变量：
 
 ```env
-# 数据库配置
+# Database Configuration
 DB_NAME=pooplet
 DB_USER=pooplet
 DB_PASSWORD=your_secure_db_password_here
 
-# 应用配置
+# Application Configuration
+NODE_ENV=production
 APP_URL=https://your-domain.com
+DISABLE_REGISTRATION=false
+
+# Authentication Security
 BETTER_AUTH_SECRET=your_very_long_random_secret_key_here_minimum_32_characters
+BETTER_AUTH_URL=https://your-domain.com
+BETTER_AUTH_SECURE=true
+
+# Rate Limiting
+ENABLE_RATE_LIMITING=true
+RATE_LIMIT_REQUESTS_PER_MINUTE=60
+RATE_LIMIT_REQUESTS_PER_HOUR=1000
+
+# Monitoring
+NEXT_TELEMETRY_DISABLED=1
 ```
 
 ### 3. 创建必要目录
@@ -103,9 +117,8 @@ docker-compose logs -f
 | `DB_NAME` | 数据库名称 | `pooplet` |
 | `DB_USER` | 数据库用户 | `pooplet` |
 | `DISABLE_REGISTRATION` | 禁用注册 | `false` |
-| `REGISTRY` | Docker 镜像仓库 | `ghcr.io` |
-| `IMAGE_NAME` | 镜像名称 | `your-org/pooplet` |
-| `TAG` | 镜像标签 | `latest` |
+| `RATE_LIMIT_REQUESTS_PER_MINUTE` | 每分钟请求限制 | `60` |
+| `RATE_LIMIT_REQUESTS_PER_HOUR` | 每小时请求限制 | `1000` |
 
 ## 数据库管理
 
