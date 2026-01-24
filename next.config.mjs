@@ -7,14 +7,8 @@ const nextConfig = {
   images: {
     remotePatterns: [],
   },
-  // Disable Turbopack explicitly
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
-    return config;
-  },
+  // Explicitly disable Turbopack for Next.js 16
+  turbopack: false,
 };
 
 export default nextConfig;
