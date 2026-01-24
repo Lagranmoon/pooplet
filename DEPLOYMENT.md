@@ -1,6 +1,67 @@
-# 生产部署指南
+# 部署指南
 
-本文档介绍如何将 Pooplet 应用部署到生产环境。
+本文档介绍如何将 Pooplet 应用部署到生产环境和预览环境。
+
+## 部署环境类型
+
+- **生产环境**：使用预构建的 Docker 镜像部署到生产服务器
+- **预览环境**：基于当前代码构建镜像，用于本地测试和问题复现
+
+---
+
+## 预览环境部署
+
+预览环境用于在本地模拟服务器部署、排查和复现问题。
+
+### 快速启动
+
+```bash
+# 启动预览环境（端口 3001）
+docker-compose -f docker-compose.preview.yml up -d --build
+
+# 查看服务状态
+docker-compose -f docker-compose.preview.yml ps
+
+# 查看日志
+docker-compose -f docker-compose.preview.yml logs -f
+```
+
+### 停止预览环境
+
+```bash
+# 停止所有服务
+docker-compose -f docker-compose.preview.yml down
+
+# 停止并删除数据卷（完全重置）
+docker-compose -f docker-compose.preview.yml down -v
+```
+
+### 环境差异
+
+| 特性 | 生产环境 | 预览环境 |
+|------|---------|---------|
+| 配置文件 | `docker-compose.yml` | `docker-compose.preview.yml` |
+| 镜像来源 | 预构建镜像 (`ghcr.io/lagranmoon/pooplet:latest`) | 本地构建 (`build: .`) |
+| 端口映射 | `3000:3000` | `3001:3000` |
+| 数据库名称 | `pooplet` | `pooplet_preview` |
+| 数据存储 | `./data/postgres` | `./data/preview-postgres` |
+
+### 访问预览环境
+
+- 应用访问：http://localhost:3001
+- 数据库名称：`pooplet_preview`
+- 容器名称：`pooplet-preview-app`、`pooplet-preview-postgres`
+
+### 典型使用场景
+
+1. **复现生产问题**：在预览环境中模拟生产环境的配置
+2. **测试新功能**：在不影响生产环境的情况下测试代码更改
+3. **调试部署问题**：使用当前代码的实时构建进行调试
+4. **数据库迁移测试**：在独立的数据库上测试迁移脚本
+
+---
+
+## 生产环境部署
 
 ## 前置要求
 
@@ -206,14 +267,11 @@ docker system df
 ### 更新应用
 
 ```bash
-# 拉取最新代码
-git pull origin main
-
-# 重新构建镜像
-docker-compose build app
+# 拉取最新镜像
+docker-compose pull app
 
 # 重启应用
-docker-compose restart app
+docker-compose up -d app
 ```
 
 ### 数据库迁移
@@ -237,6 +295,85 @@ docker-compose down -v
 
 # 重新启动
 docker-compose up -d
+```
+
+## 使用预览环境排查问题
+
+预览环境是本地调试和问题复现的利器：
+
+### 常见排查流程
+
+```bash
+# 1. 停止预览环境（如果正在运行）
+docker-compose -f docker-compose.preview.yml down
+
+# 2. 清理预览数据卷（可选，用于完全重置）
+docker-compose -f docker-compose.preview.yml down -v
+
+# 3. 重新构建并启动预览环境
+docker-compose -f docker-compose.preview.yml up -d --build
+
+# 4. 查看启动日志
+docker-compose -f docker-compose.preview.yml logs -f
+
+# 5. 检查服务状态
+docker-compose -f docker-compose.preview.yml ps
+
+# 6. 访问应用
+# 打开浏览器访问 http://localhost:3001
+```
+
+### 进入预览环境容器
+
+```bash
+# 进入应用容器
+docker exec -it pooplet-preview-app sh
+
+# 进入数据库容器
+docker exec -it pooplet-preview-postgres psql -U pooplet -d pooplet_preview
+
+# 运行 Prisma 命令
+docker exec -it pooplet-preview-app npx prisma studio
+docker exec -it pooplet-preview-app npx prisma migrate status
+```
+
+### 对比生产环境
+
+```bash
+# 查看生产环境日志
+docker-compose logs app
+
+# 查看预览环境日志
+docker-compose -f docker-compose.preview.yml logs app
+
+# 对比数据库状态
+docker exec pooplet-postgres psql -U pooplet -d pooplet -c "SELECT COUNT(*) FROM pooplet_record;"
+docker exec pooplet-preview-postgres psql -U pooplet -d pooplet_preview -c "SELECT COUNT(*) FROM pooplet_record;"
+```
+
+### 快速重置预览环境
+
+```bash
+# 一键重置（删除所有数据并重新初始化）
+docker-compose -f docker-compose.preview.yml down -v && \
+docker-compose -f docker-compose.preview.yml up -d --build
+```
+
+### 预览环境特有命令
+
+```bash
+# 重新构建镜像（不重启）
+docker-compose -f docker-compose.preview.yml build app
+
+# 重启特定服务
+docker-compose -f docker-compose.preview.yml restart app
+docker-compose -f docker-compose.preview.yml restart postgres
+
+# 查看资源使用
+docker stats pooplet-preview-app pooplet-preview-postgres
+
+# 查看容器详细信息
+docker inspect pooplet-preview-app
 ```
 
 ## 故障排除
