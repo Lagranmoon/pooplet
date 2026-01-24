@@ -37,6 +37,8 @@ npm run dev
 docker-compose up -d
 ```
 
+应用将在 http://localhost:3000 启动（生产环境端口可通过环境变量配置）
+
 ## 技术栈
 
 - **前端**: Next.js 14 + React 18 + TypeScript
@@ -45,6 +47,7 @@ docker-compose up -d
 - **UI**: Radix UI + Tailwind CSS
 - **图表**: Recharts
 - **部署**: Docker + GitHub Actions
+- **架构**: 简化的微服务架构（无反向代理）
 
 ## 功能特性
 

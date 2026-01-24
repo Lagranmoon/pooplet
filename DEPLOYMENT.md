@@ -38,18 +38,12 @@ DB_PASSWORD=your_secure_db_password_here
 # 应用配置
 APP_URL=https://your-domain.com
 BETTER_AUTH_SECRET=your_very_long_random_secret_key_here_minimum_32_characters
-
-# SSL 配置
-# 将 SSL 证书放置在 ./ssl/ 目录
-# - cert.pem (SSL 证书)
-# - key.pem (SSL 私钥)
 ```
 
 ### 3. 创建必要目录
 
 ```bash
-mkdir -p data/postgres logs ssl backups
-chmod 755 data/postgres logs
+mkdir -p backups
 ```
 
 ### 4. 部署应用
@@ -67,31 +61,27 @@ docker-compose logs -f
 
 ## 架构说明
 
-生产环境采用以下架构：
+生产环境采用简化的微服务架构：
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Nginx    │───▶│  Next.js   │───▶│ PostgreSQL │
-│ (反向代理)  │    │   应用      │    │   数据库    │
-└─────────────┘    └─────────────┘    └─────────────┘
+┌─────────────┐    ┌─────────────┐
+│  Next.js   │───▶│ PostgreSQL │
+│   应用      │    │   数据库    │
+│  (端口3000) │    │  (端口5432) │
+└─────────────┘    └─────────────┘
 ```
 
 ### 服务说明
 
-#### Nginx 反向代理
-- 端口: 80, 443
-- SSL 终止
-- 静态文件服务
-- 负载均衡
-
 #### Next.js 应用
 - 端口: 3000
+- 直接对外提供服务
 - 生产环境优化
 - 安全配置
 - 健康检查
 
 #### PostgreSQL 数据库
-- 端口: 5432
+- 端口: 5432（仅内部访问）
 - 数据持久化
 - 自动备份
 - 安全配置
@@ -113,37 +103,9 @@ docker-compose logs -f
 | `DB_NAME` | 数据库名称 | `pooplet` |
 | `DB_USER` | 数据库用户 | `pooplet` |
 | `DISABLE_REGISTRATION` | 禁用注册 | `false` |
-| `HTTP_PORT` | HTTP 端口 | `80` |
-| `HTTPS_PORT` | HTTPS 端口 | `443` |
-
-## SSL 配置
-
-### 使用 Let's Encrypt
-
-```bash
-# 安装 Certbot
-sudo apt install certbot
-
-# 获取证书
-sudo certbot certonly --standalone -d your-domain.com
-
-# 复制证书到项目目录
-sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem ssl/cert.pem
-sudo cp /etc/letsencrypt/live/your-domain.com/privkey.pem ssl/key.pem
-
-# 设置权限
-sudo chmod 644 ssl/cert.pem ssl/key.pem
-```
-
-### 使用现有证书
-
-将证书文件放入 `ssl/` 目录：
-
-```
-ssl/
-├── cert.pem      # SSL 证书
-└── key.pem       # SSL 私钥
-```
+| `REGISTRY` | Docker 镜像仓库 | `ghcr.io` |
+| `IMAGE_NAME` | 镜像名称 | `your-org/pooplet` |
+| `TAG` | 镜像标签 | `latest` |
 
 ## 数据库管理
 
@@ -186,7 +148,6 @@ docker-compose logs
 # 查看特定服务日志
 docker-compose logs app
 docker-compose logs postgres
-docker-compose logs nginx
 
 # 实时查看日志
 docker-compose logs -f app
@@ -195,11 +156,11 @@ docker-compose logs -f app
 ### 健康检查
 
 ```bash
-# 检查服务健康状态
+# 检查应用健康状态
 curl http://localhost:3000/api/health
 
-# 检查 Nginx 状态
-curl http://localhost/health
+# 检查数据库连接
+docker exec pooplet-postgres pg_isready -U pooplet
 ```
 
 ### 性能监控
@@ -264,14 +225,18 @@ docker exec pooplet-postgres pg_isready -U pooplet
 docker exec pooplet-app env | grep DATABASE_URL
 ```
 
-#### 2. SSL 证书问题
+#### 2. 应用无法启动
 
 ```bash
-# 检查证书文件
-ls -la ssl/
+# 检查应用日志
+docker-compose logs app
 
-# 检查 Nginx 配置
-docker exec pooplet-nginx nginx -t
+# 检查端口占用
+netstat -tlnp | grep :3000
+
+# 重新构建镜像
+docker-compose build app
+docker-compose up -d
 ```
 
 #### 3. 内存不足
@@ -325,11 +290,12 @@ docker-compose restart
    CREATE INDEX IF NOT EXISTS idx_records_occurred_at ON records(occurred_at);
    ```
 
-3. **Nginx 优化**
-   ```nginx
-   # 在 nginx/nginx.conf 中启用 gzip 压缩
-   gzip on;
-   gzip_types text/plain application/json;
+3. **应用优化**
+   ```yaml
+   # 在生产环境中启用 Next.js 优化
+   environment:
+     - NODE_ENV=production
+     - NEXT_TELEMETRY_DISABLED=1
    ```
 
 ### 监控设置
@@ -353,8 +319,7 @@ docker-compose restart
 2. **防火墙配置**
    ```bash
    # 只开放必要端口
-   sudo ufw allow 80
-   sudo ufw allow 443
+   sudo ufw allow 3000
    sudo ufw deny 5432
    ```
 
@@ -365,10 +330,11 @@ docker-compose restart
    # 添加: 0 2 * * * /path/to/backup-script.sh
    ```
 
-4. **SSL 证书自动续期**
+4. **应用更新**
    ```bash
-   # Let's Encrypt 自动续期
-   0 12 * * * /usr/bin/certbot renew --quiet
+   # 定期更新镜像
+   docker-compose pull
+   docker-compose up -d
    ```
 
 ## 联系支持
@@ -381,6 +347,5 @@ docker-compose restart
 4. 服务器资源充足
 
 详细日志文件位于：
-- 应用日志: `logs/app.log`
-- Nginx 日志: `logs/nginx/`
+- 应用日志: `docker-compose logs`
 - 数据库日志: Docker 容器日志
