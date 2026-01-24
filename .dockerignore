@@ -190,3 +190,4 @@ config.local.js
 *.njsproj
 *.sln
 *.sw?
+data/
