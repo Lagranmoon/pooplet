@@ -18,6 +18,7 @@ RUN npm ci && \
     npm cache clean --force && \
     mkdir -p /app/standalone && \
     cp -r /app/.next/standalone/* /app/standalone/ && \
+    cp /app/.next/BUILD_ID /app/standalone/.next/ 2>/dev/null || true && \
     cp -r /app/.next/static /app/standalone/.next/ && \
     cp -r /app/public /app/standalone/ 2>/dev/null || true && \
     cp -r /app/prisma /app/standalone/ && \
