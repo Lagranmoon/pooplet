@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import {
   BarChart,
@@ -26,13 +26,7 @@ export default function StatsPage() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState("7");
 
-  useEffect(() => {
-    if (session) {
-      fetchStats();
-    }
-  }, [session, period]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const res = await fetch(`/api/stats/overview?period=${period}`);
       const data = await res.json();
@@ -44,7 +38,13 @@ export default function StatsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    if (session) {
+      fetchStats();
+    }
+  }, [session, fetchStats]);
 
   if (!session) {
     return (

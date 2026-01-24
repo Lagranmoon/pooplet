@@ -27,13 +27,7 @@ export default function RecordsPage() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (session) {
-      fetchRecords();
-    }
-  }, [session, page]);
-
-  const fetchRecords = async () => {
+  const fetchRecords = useCallback(async () => {
     try {
       const res = await fetch(`/api/records?page=${page}&limit=20`);
       const data = await res.json();
@@ -46,7 +40,13 @@ export default function RecordsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    if (session) {
+      fetchRecords();
+    }
+  }, [session, fetchRecords]);
 
   // 使用 useMemo 缓存质量选项查找
   const qualityOptionsMap = useMemo(() => {
@@ -72,7 +72,7 @@ export default function RecordsPage() {
     setDeleting(null);
     setDeleteId(null);
     setConfirmDialogOpen(false);
-  }, [deleteId]);
+  }, [deleteId, fetchRecords]);
 
   const cancelDelete = useCallback(() => {
     setDeleteId(null);

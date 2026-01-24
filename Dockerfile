@@ -16,8 +16,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies with security audit
-RUN npm ci --only=production && \
+# Install all dependencies for build
+RUN npm ci && \
     npm audit --audit-level=moderate && \
     npm cache clean --force
 
