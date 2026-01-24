@@ -23,24 +23,6 @@ services:
       timeout: 10s
       retries: 3
 
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: pooplet-redis-dev
-    restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_dev_data:/data
-    networks:
-      - pooplet-dev-network
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-
   # Development Application
   app:
     build:
@@ -52,12 +34,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://pooplet:devpassword@postgres:5432/pooplet_dev?schema=public
-      REDIS_URL: redis://redis:6379
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: development-secret-key
       BETTER_AUTH_SECURE: false
@@ -80,4 +59,3 @@ networks:
 
 volumes:
   postgres_dev_data:
-  redis_dev_data:
