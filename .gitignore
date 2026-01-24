@@ -51,3 +51,6 @@ out/
 
 # Misc
 .turbo
+
+# Database data
+data/

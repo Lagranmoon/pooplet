@@ -31,10 +31,10 @@ fi
 
 # Create necessary directories
 echo "Creating necessary directories..."
-mkdir -p backups
+mkdir -p data/postgres
 
 # Set proper permissions
-chmod 755 backups
+chmod 755 data/postgres
 
 # Check if .env file exists
 if [[ ! -f ".env" ]]; then

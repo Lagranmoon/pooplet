@@ -43,7 +43,7 @@ BETTER_AUTH_SECRET=your_very_long_random_secret_key_here_minimum_32_characters
 ### 3. 创建必要目录
 
 ```bash
-mkdir -p backups
+mkdir -p data/postgres
 ```
 
 ### 4. 部署应用
