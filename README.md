@@ -19,7 +19,7 @@ docker run -d \
   -e POSTGRES_USER=pooplet \
   -e POSTGRES_PASSWORD=devpassword \
   -p 5432:5432 \
-  postgres:15-alpine
+  postgres:18-alpine
 
 # 初始化数据库
 npm run db:generate
