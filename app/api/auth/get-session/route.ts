@@ -14,7 +14,15 @@ export async function GET(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || "Get session failed" }), {
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Get session error:", error);
+    }
+    
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? "获取会话失败" 
+      : error.message || "获取会话失败";
+    
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

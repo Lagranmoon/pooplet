@@ -1,6 +1,6 @@
 # Development Guidelines for Bowel Movement Tracker
 
-This document provides comprehensive guidelines for AI agents working on this React + TypeScript + Supabase project.
+This document provides comprehensive guidelines for AI agents working on this Next.js + React + TypeScript + Prisma project.
 
 ## Build, Lint, and Test Commands
 
@@ -26,11 +26,11 @@ This document provides comprehensive guidelines for AI agents working on this Re
 ```typescript
 // External libraries first (alphabetical)
 import { useState, useEffect } from 'react';
-import type { User } from '@supabase/supabase-js';
+import { prisma } from '@/lib/prisma';
 
 // Internal imports (relative paths)
-import { supabase } from '../services/supabase';
-import type { Record } from '../types/database';
+import { auth } from '@/lib/auth';
+import type { Record } from '@prisma/client';
 ```
 
 ### File Organization
@@ -117,19 +117,18 @@ export default MyComponent;
 ```typescript
 async createRecord(data: CreateRecordRequest): Promise<ApiResponse<Record>> {
   try {
-    const { data: result, error } = await supabase
-      .from('bowel_movement_records')
-      .insert(data)
-      .select()
-      .single();
-
-    if (error) {
-      return { success: false, error: error.message };
-    }
+    const result = await prisma.record.create({
+      data: {
+        userId: data.userId,
+        occurredAt: data.occurredAt,
+        qualityRating: data.qualityRating,
+        notes: data.notes,
+      },
+    });
 
     return { success: true, data: result };
   } catch (error) {
-    return { success: false, error: 'Network error' };
+    return { success: false, error: error instanceof Error ? error.message : 'Database error' };
   }
 }
 ```
@@ -148,22 +147,28 @@ const handleSubmit = async (data: FormData) => {
 };
 ```
 
-### Database & Supabase
+### Database & Authentication
 
-**RLS Policies:**
-- All database access must respect Row Level Security
+**Prisma ORM:**
+- All database access should go through Prisma Client
 - User can only access their own records
-- Test RLS policies with `npm run test:rls`
+- Run migrations with `npm run db:migrate`
 
 **Database Types:**
 ```typescript
-import type { Database } from '@/types/database';
+import { prisma } from '@/lib/prisma';
+import type { Record } from '@prisma/client';
 
-const { data, error } = await supabase
-  .from('bowel_movement_records')
-  .select('*')
-  .eq('user_id', user.id);
+const records = await prisma.record.findMany({
+  where: { userId: user.id },
+  orderBy: { occurredAt: 'desc' },
+});
 ```
+
+**better-auth:**
+- Use better-auth for user authentication
+- Sessions are managed automatically
+- Auth routes should be created in `app/api/auth/...`
 
 ### Testing Standards
 
@@ -213,7 +218,7 @@ const Card: React.FC<Props> = ({ children }) => (
 
 **Authentication:**
 - Always check user authentication before data access
-- Use Supabase RLS for data security
+- Use better-auth for authentication and session management
 
 ### Development Workflow
 
@@ -226,7 +231,8 @@ const Card: React.FC<Props> = ({ children }) => (
 
 - React 19 + TypeScript
 - Vite for bundling
-- Supabase for backend
-- React Router for navigation
+- Next.js 16 for full-stack framework
+- Prisma for database ORM
+- better-auth for authentication
 - Tailwind CSS for styling
 - Vitest for testing

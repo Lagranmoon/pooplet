@@ -10,7 +10,15 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || "Delete session failed" }), {
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Delete session error:", error);
+    }
+    
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? "删除会话失败" 
+      : error.message || "删除会话失败";
+    
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

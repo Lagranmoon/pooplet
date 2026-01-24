@@ -12,7 +12,11 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "delete-user": "tsx scripts/delete-user.ts",
+    "reset-password": "tsx scripts/reset-password.ts",
+    "list-users": "tsx scripts/list-users.ts",
+    "user:help": "tsx scripts/delete-user.ts --help"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
@@ -37,6 +41,7 @@
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
     "prisma": "^6.0.0",
+    "rate-limiter-flexible": "^9.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^2.15.0",
@@ -56,6 +61,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.3"
   },
   "prisma": {

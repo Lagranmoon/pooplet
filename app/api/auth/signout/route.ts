@@ -15,7 +15,15 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || "Signout failed" }), {
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Signout error:", error);
+    }
+    
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? "登出失败" 
+      : error.message || "登出失败";
+    
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

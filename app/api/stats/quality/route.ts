@@ -1,11 +1,18 @@
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) {
+    return NextResponse.json({ error: "未认证" }, { status: 401 });
+  }
+
   try {
     const qualityStats = await prisma.record.groupBy({
       by: ["qualityRating"],
       _count: true,
+      where: { userId: session.user.id },
     });
 
     const distribution = {
@@ -37,10 +44,12 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Quality stats error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Quality stats error:', error);
+    }
     return NextResponse.json({
       success: false,
       error: '获取质量分布数据失败',
-    });
+    }, { status: 500 });
   }
 }

@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const createRecordSchema = z.object({
-  occurredAt: z.string().datetime(),
+  occurredAt: z.string().datetime().refine(
+    (date) => new Date(date) <= new Date(),
+    "发生时间不能是未来时间"
+  ),
   qualityRating: z.number().int().min(1).max(7),
   notes: z.string().max(500).optional(),
 });
@@ -82,8 +85,11 @@ export async function POST(request: NextRequest) {
 
     const validated = createRecordSchema.safeParse(body);
     if (!validated.success) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Validation failed:", validated.error);
+      }
       return NextResponse.json(
-        { success: false, error: "验证失败", details: validated.error },
+        { success: false, error: "验证失败" },
         { status: 400 }
       );
     }
@@ -99,8 +105,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: record });
   } catch (error: any) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Create record error:", error);
+    }
+    
+    const errorMessage = process.env.NODE_ENV === 'production' 
+      ? "创建记录失败" 
+      : error.message || "创建记录失败";
+    
     return NextResponse.json(
-      { success: false, error: error.message || "创建记录失败" },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

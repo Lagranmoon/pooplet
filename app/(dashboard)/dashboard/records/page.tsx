@@ -1,10 +1,11 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { deleteRecord } from "../../../actions/recordActions";
+import { ConfirmDialog } from "../../../../src/components/ui/confirm-dialog";
 
 const qualityOptions = [
   { value: 1, label: "很差", color: "bg-red-500", textColor: "text-red-500" },
@@ -23,6 +24,8 @@ export default function RecordsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     if (session) {
@@ -45,20 +48,40 @@ export default function RecordsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("确定要删除这条记录吗？")) return;
+  // 使用 useMemo 缓存质量选项查找
+  const qualityOptionsMap = useMemo(() => {
+    return qualityOptions.reduce((acc, option) => {
+      acc[option.value] = option;
+      return acc;
+    }, {} as Record<number, any>);
+  }, []);
 
-    setDeleting(id);
-    const result = await deleteRecord(id);
+  const handleDelete = useCallback((id: string) => {
+    setDeleteId(id);
+    setConfirmDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteId) return;
+
+    setDeleting(deleteId);
+    const result = await deleteRecord(deleteId);
     if (result.success) {
       fetchRecords();
     }
     setDeleting(null);
-  };
+    setDeleteId(null);
+    setConfirmDialogOpen(false);
+  }, [deleteId]);
 
-  const getQualityInfo = (value: number) => {
-    return qualityOptions.find((o) => o.value === value) || qualityOptions[0];
-  };
+  const cancelDelete = useCallback(() => {
+    setDeleteId(null);
+    setConfirmDialogOpen(false);
+  }, []);
+
+  const getQualityInfo = useCallback((value: number) => {
+    return qualityOptionsMap[value] || qualityOptions[0];
+  }, [qualityOptionsMap]);
 
   if (!session) {
     return (
@@ -158,6 +181,16 @@ export default function RecordsPage() {
           )}
         </>
       )}
+
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        title="删除记录"
+        description="确定要删除这条记录吗？此操作无法撤销。"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        confirmText="删除"
+        cancelText="取消"
+      />
     </div>
   );
 }

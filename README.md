@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# 拉屎记录应用
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个帮助用户跟踪和分析排便习惯的 Web 应用程序。
 
-Currently, two official plugins are available:
+## 快速开始
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 本地开发
 
-## React Compiler
+完整的本地开发环境设置指南请查看 [DEVELOPMENT.md](./DEVELOPMENT.md)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+快速启动：
 
-## Expanding the ESLint configuration
+```bash
+# 1. 安装依赖
+npm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# 2. 配置环境变量
+cp .env.example .env
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# 3. 启动 PostgreSQL 数据库
+docker-compose -f docker-compose.dev.yml up -d
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# 4. 初始化数据库
+npm run db:generate
+npm run db:push
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 5. 启动开发服务器
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+访问 http://localhost:3000
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 技术栈
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **前端**: Next.js 16 + React 19 + TypeScript
+- **数据库**: PostgreSQL + Prisma ORM
+- **认证**: better-auth
+- **UI**: Radix UI + Tailwind CSS
+- **图表**: Recharts
+
+## 文档
+
+- [DEVELOPMENT.md](./DEVELOPMENT.md) - 本地开发指南
+- [AGENTS.md](./AGENTS.md) - 开发规范
+- [database/README.md](./database/README.md) - 数据库架构
+- [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) - 部署指南
+
+## 主要功能
+
+- 日常排便记录
+- 数据统计分析
+- 响应式 Web 界面
+- 用户认证和数据隔离
+
+## 许可证
+
+MIT
