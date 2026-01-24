@@ -6,7 +6,7 @@
 
 ### 本地开发
 
-完整的本地开发环境设置指南请查看 [DEVELOPMENT.md](./DEVELOPMENT.md)
+详细的开发环境设置请查看 [DEV_SETUP.md](./DEV_SETUP.md)
 
 快速启动：
 
@@ -18,7 +18,13 @@ npm install
 cp .env.example .env
 
 # 3. 启动 PostgreSQL 数据库
-docker-compose -f docker-compose.dev.yml up -d
+docker run -d \
+  --name pooplet-postgres-dev \
+  -e POSTGRES_DB=pooplet_dev \
+  -e POSTGRES_USER=pooplet \
+  -e POSTGRES_PASSWORD=devpassword \
+  -p 5432:5432 \
+  postgres:15-alpine
 
 # 4. 初始化数据库
 npm run db:generate

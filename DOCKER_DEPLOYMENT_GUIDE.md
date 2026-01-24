@@ -77,10 +77,16 @@ cp .env.example .env
 ./deploy.sh dev
 
 # 或手动启动
-docker-compose -f docker-compose.dev.yml up -d
+docker run -d \
+  --name pooplet-postgres-dev \
+  -e POSTGRES_DB=pooplet_dev \
+  -e POSTGRES_USER=pooplet \
+  -e POSTGRES_PASSWORD=devpassword \
+  -p 5432:5432 \
+  postgres:15-alpine
 
 # 查看日志
-docker-compose -f docker-compose.dev.yml logs -f app
+docker logs -f pooplet-postgres-dev
 ```
 
 ### 开发环境特性

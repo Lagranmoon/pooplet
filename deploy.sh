@@ -2,12 +2,12 @@
 
 # Pooplet Deployment Script
 # Usage: ./deploy.sh [environment]
-# Environments: dev, staging, production
+# Environments: staging, production
 
 set -e
 
 ENVIRONMENT=${1:-production}
-COMPOSE_FILE="docker-compose.prod.yml"
+COMPOSE_FILE="docker-compose.yml"
 HEALTH_TIMEOUT=300
 
 echo "=== Pooplet Deployment Script ==="
@@ -16,24 +16,12 @@ echo "Compose file: $COMPOSE_FILE"
 echo
 
 # Check if environment is valid
-if [[ ! "$ENVIRONMENT" =~ ^(dev|staging|production)$ ]]; then
+if [[ ! "$ENVIRONMENT" =~ ^(staging|production)$ ]]; then
     echo "Error: Invalid environment '$ENVIRONMENT'"
-    echo "Valid environments: dev, staging, production"
+    echo "Valid environments: staging, production"
+    echo "Note: Development environment uses 'npm run dev' + docker"
     exit 1
 fi
-
-# Set compose file based on environment
-case $ENVIRONMENT in
-    dev)
-        COMPOSE_FILE="docker-compose.dev.yml"
-        ;;
-    staging)
-        COMPOSE_FILE="docker-compose.staging.yml"
-        ;;
-    production)
-        COMPOSE_FILE="docker-compose.prod.yml"
-        ;;
-esac
 
 # Check if compose file exists
 if [[ ! -f "$COMPOSE_FILE" ]]; then
@@ -43,11 +31,10 @@ fi
 
 # Create necessary directories
 echo "Creating necessary directories..."
-mkdir -p data/postgres data/redis logs ssl backups
-mkdir -p monitoring/grafana/provisioning
+mkdir -p data/postgres logs ssl backups
 
 # Set proper permissions
-chmod 755 data/postgres data/redis logs
+chmod 755 data/postgres logs
 chmod 700 ssl
 
 # Check if .env file exists
