@@ -1,22 +1,40 @@
 version: '3.8'
 
+# 生产环境配置 - 使用 GitHub Packages 预构建镜像
+# Production configuration - Uses pre-built image from GitHub Packages
+#
+# 使用方法 / Usage:
+#   docker-compose up -d
+#
+# 使用特定版本 / Use specific version:
+#   POOPLE_TAG=v1.0.0 docker-compose up -d
+
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: poop-tracker
+    image: ${POOPLE_IMAGE:-ghcr.io/lagranmoon/pooplet}:${POOPLE_TAG:-latest}
+    container_name: pooplet
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${POOPLE_PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
+      - PORT=3000
+      # 可选: 自定义 JWT 密钥 / Optional: Custom JWT secret
+      # - JWT_SECRET=your-secret-key
     volumes:
-      # Persist SQLite database
+      # 持久化 SQLite 数据库 / Persist SQLite database
       - ./data:/app/data
+    # 使用非 root 用户运行 (已经在镜像中配置)
+    # Run as non-root user (already configured in image)
+    user: "1001:1001"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/auth/me"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m

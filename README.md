@@ -57,23 +57,54 @@ Open http://localhost:3000
 
 ### Docker Deployment
 
+**Production (GitHub Packages Image) / 生产环境**
+
 ```bash
-# Build and run with Docker Compose
+# Setup data directory permissions / 设置数据目录权限
+./scripts/setup-permissions.sh
+
+# Start with pre-built image / 使用预构建镜像启动
 docker-compose up -d
 
-# Or use pre-built image from GitHub Packages
-docker pull ghcr.io/lagranmoon/pooplet:latest
-docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
+# Use specific version / 使用特定版本
+POOPLE_TAG=v1.0.0 docker-compose up -d
 ```
 
-### Environment Variables
+**Development (Local Build) / 开发环境**
+
+```bash
+# Build and run locally / 本地构建并运行
+docker-compose -f docker-compose.dev.yml up -d --build
+```
+
+**Docker Run / 直接运行**
+
+```bash
+# Pull and run from GitHub Packages / 从 GitHub Packages 拉取并运行
+docker pull ghcr.io/lagranmoon/pooplet:latest
+docker run -p 3000:3000 -v $(pwd)/data:/app/data --user 1001:1001 ghcr.io/lagranmoon/pooplet:latest
+```
+
+### Environment Variables / 环境变量
+
+Copy `.env.example` to `.env` and customize / 复制 `.env.example` 到 `.env` 并自定义：
+
+```bash
+cp .env.example .env
+```
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `production` |
-| `PORT` | Server port | `3000` |
+| `POOPLE_IMAGE` | Docker image to use | `ghcr.io/lagranmoon/pooplet` |
+| `POOPLE_TAG` | Image tag (version) | `latest` |
+| `POOPLE_PORT` | Server port | `3000` |
 | `JWT_SECRET` | Secret key for JWT | Random generated |
-| `DATA_DIR` | Database directory | `./data` |
+
+### Security Notes / 安全说明
+
+- Container runs as non-root user (UID 1001) / 容器以非 root 用户运行 (UID 1001)
+- Data directory must have correct permissions / 数据目录需要正确权限
+- See `scripts/setup-permissions.sh` for details / 详情见 `scripts/setup-permissions.sh` |
 
 ---
 
@@ -120,23 +151,54 @@ npm run dev
 
 ### Docker 部署
 
+**生产环境 (GitHub Packages 镜像)**
+
 ```bash
-# 使用 Docker Compose 构建并运行
+# 设置数据目录权限
+./scripts/setup-permissions.sh
+
+# 使用预构建镜像启动
 docker-compose up -d
 
-# 或使用 GitHub Packages 预构建镜像
+# 使用特定版本
+POOPLE_TAG=v1.0.0 docker-compose up -d
+```
+
+**开发环境 (本地构建)**
+
+```bash
+# 本地构建并运行
+docker-compose -f docker-compose.dev.yml up -d --build
+```
+
+**直接运行**
+
+```bash
+# 从 GitHub Packages 拉取并运行
 docker pull ghcr.io/lagranmoon/pooplet:latest
-docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
+docker run -p 3000:3000 -v $(pwd)/data:/app/data --user 1001:1001 ghcr.io/lagranmoon/pooplet:latest
 ```
 
 ### 环境变量
 
+复制 `.env.example` 到 `.env` 并自定义：
+
+```bash
+cp .env.example .env
+```
+
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
-| `NODE_ENV` | 环境模式 | `production` |
-| `PORT` | 服务端口 | `3000` |
+| `POOPLE_IMAGE` | Docker 镜像 | `ghcr.io/lagranmoon/pooplet` |
+| `POOPLE_TAG` | 镜像标签（版本） | `latest` |
+| `POOPLE_PORT` | 服务端口 | `3000` |
 | `JWT_SECRET` | JWT 密钥 | 随机生成 |
-| `DATA_DIR` | 数据库目录 | `./data` |
+
+### 安全说明
+
+- 容器以非 root 用户运行 (UID 1001)
+- 数据目录需要正确权限
+- 详情见 `scripts/setup-permissions.sh`
 
 ---
 
