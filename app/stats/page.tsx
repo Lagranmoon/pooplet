@@ -1,50 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StatsCharts } from "@/components/stats-charts"
 import { getBristolTypeInfo } from "@/lib/utils"
 import { Calendar, Activity, Target, TrendingUp } from "lucide-react"
-
-interface StatsData {
-  period: string
-  summary: {
-    totalCount: number
-    uniqueDays: number
-    avgType: number | null
-    idealPercentage: number
-    currentStreak: number
-  }
-  comparison: {
-    totalCountChange: number
-  }
-  typeDistribution: { type: number; count: number }[]
-  dailyCounts: { date: string; count: number }[]
-}
+import { useStats } from "@/lib/hooks"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function StatsPage() {
   const [period, setPeriod] = useState("month")
-  const [stats, setStats] = useState<StatsData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      setIsLoading(true)
-      try {
-        const response = await fetch(`/api/stats?period=${period}`)
-        const data = await response.json()
-        setStats(data)
-      } catch (error) {
-        console.error("Error fetching stats:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchStats()
-  }, [period])
+  const { stats, isLoading } = useStats(period)
 
   const periodLabel = {
     week: "本周",
@@ -55,15 +23,15 @@ export default function StatsPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+        <Skeleton className="h-8 w-48" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-muted rounded-xl animate-pulse" />
+            <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />
+            <Skeleton key={i} className="h-64 rounded-xl" />
           ))}
         </div>
       </div>

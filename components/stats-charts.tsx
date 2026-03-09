@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getBristolTypeInfo, getBristolColorClass } from "@/lib/utils"
 import {
@@ -28,7 +28,7 @@ interface StatsChartsProps {
 
 const COLORS = ["#EF4444", "#F59E0B", "#22C55E", "#22C55E", "#22C55E", "#F59E0B", "#EF4444"]
 
-export function StatsCharts({ data, period }: StatsChartsProps) {
+function StatsChartsComponent({ data, period }: StatsChartsProps) {
   const typeChartData = useMemo(() => {
     return data.typeDistribution.map((item) => ({
       ...item,
@@ -119,3 +119,5 @@ export function StatsCharts({ data, period }: StatsChartsProps) {
     </div>
   )
 }
+
+export const StatsCharts = memo(StatsChartsComponent)

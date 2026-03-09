@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, memo } from "react"
 import {
   format,
   startOfMonth,
@@ -35,7 +35,7 @@ interface PoopCalendarProps {
 
 const weekDays = ["一", "二", "三", "四", "五", "六", "日"]
 
-export function PoopCalendar({ records, onDateClick, onMonthChange }: PoopCalendarProps) {
+function PoopCalendarComponent({ records, onDateClick, onMonthChange }: PoopCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   const calendarDays = useMemo(() => {
@@ -154,3 +154,5 @@ export function PoopCalendar({ records, onDateClick, onMonthChange }: PoopCalend
     </div>
   )
 }
+
+export const PoopCalendar = memo(PoopCalendarComponent)

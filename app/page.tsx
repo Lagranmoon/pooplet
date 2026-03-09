@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { format, parseISO } from "date-fns"
 import { zhCN } from "date-fns/locale"
 import { Plus, Trash2, Edit2, Calendar, TrendingUp, Award } from "lucide-react"
@@ -18,74 +18,43 @@ import { RecordForm } from "@/components/record-form"
 import { Badge } from "@/components/ui/badge"
 import { getBristolTypeInfo } from "@/lib/utils"
 import { cn } from "@/lib/utils"
+import { useRecords, useStats } from "@/lib/hooks"
 
 interface PoopRecord {
   id: number
+  user_id: number
   date: string
   time: string | null
   type: number
   notes: string | null
   created_at: string
-}
-
-interface DaySummary {
-  totalCount: number
-  uniqueDays: number
-  idealPercentage: number
-  currentStreak: number
+  updated_at: string
 }
 
 export default function HomePage() {
-  const [records, setRecords] = useState<PoopRecord[]>([])
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<PoopRecord | null>(null)
-  const [summary, setSummary] = useState<DaySummary | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [currentMonth, setCurrentMonth] = useState(format(new Date(), "yyyy-MM"))
 
-  const fetchRecords = useCallback(async (month: string) => {
-    try {
-      const response = await fetch(`/api/records?month=${month}`)
-      const data = await response.json()
-      setRecords(data.records)
-    } catch (error) {
-      console.error("Error fetching records:", error)
-    }
-  }, [])
+  const { records, isLoading: isRecordsLoading, mutate: mutateRecords } = useRecords(currentMonth)
+  const { stats, mutate: mutateStats } = useStats('month')
 
-  const fetchSummary = useCallback(async () => {
-    try {
-      const response = await fetch("/api/stats?period=month")
-      const data = await response.json()
-      setSummary(data.summary)
-    } catch (error) {
-      console.error("Error fetching summary:", error)
-    }
-  }, [])
-
-  useEffect(() => {
-    setIsLoading(true)
-    Promise.all([fetchRecords(currentMonth), fetchSummary()]).finally(() => {
-      setIsLoading(false)
-    })
-  }, [currentMonth, fetchRecords, fetchSummary])
-
-  const handleDateClick = (date: Date) => {
+  const handleDateClick = useCallback((date: Date) => {
     setSelectedDate(date)
-  }
+  }, [])
 
-  const handleAddRecord = () => {
+  const handleAddRecord = useCallback(() => {
     setEditingRecord(null)
     setIsFormOpen(true)
-  }
+  }, [])
 
-  const handleEditRecord = (record: PoopRecord) => {
+  const handleEditRecord = useCallback((record: PoopRecord) => {
     setEditingRecord(record)
     setIsFormOpen(true)
-  }
+  }, [])
 
-  const handleSubmitRecord = async (data: { date: string; time?: string; type: number; notes?: string }) => {
+  const handleSubmitRecord = useCallback(async (data: { date: string; time?: string; type: number; notes?: string }) => {
     const url = editingRecord ? `/api/records/${editingRecord.id}` : "/api/records"
     const method = editingRecord ? "PUT" : "POST"
 
@@ -98,7 +67,8 @@ export default function HomePage() {
     if (response.ok) {
       setIsFormOpen(false)
       setEditingRecord(null)
-      await Promise.all([fetchRecords(currentMonth), fetchSummary()])
+      // Optimistic update with SWR
+      await Promise.all([mutateRecords(), mutateStats()])
 
       // Update selected date to show the new record
       const date = parseISO(data.date)
@@ -106,25 +76,27 @@ export default function HomePage() {
         setSelectedDate(date)
       }
     }
-  }
+  }, [editingRecord, selectedDate, mutateRecords, mutateStats])
 
-  const handleDeleteRecord = async (id: number) => {
+  const handleDeleteRecord = useCallback(async (id: number) => {
     if (!confirm("确定要删除这条记录吗？")) return
 
     const response = await fetch(`/api/records/${id}`, { method: "DELETE" })
 
     if (response.ok) {
-      await Promise.all([fetchRecords(currentMonth), fetchSummary()])
+      await Promise.all([mutateRecords(), mutateStats()])
     }
-  }
+  }, [mutateRecords, mutateStats])
+
+  const handleMonthChange = useCallback((month: string) => {
+    setCurrentMonth(month)
+  }, [])
 
   const selectedDateRecords = selectedDate
     ? records.filter((r) => r.date === format(selectedDate, "yyyy-MM-dd"))
     : []
 
-  const handleMonthChange = (month: string) => {
-    setCurrentMonth(month)
-  }
+  const summary = stats?.summary
 
   return (
     <div className="space-y-6">
