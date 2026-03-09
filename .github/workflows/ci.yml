@@ -1,0 +1,60 @@
+name: CI / 集成测试
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code / 检出代码
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js / 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies / 安装依赖
+        run: npm ci
+
+      - name: Run linter / 运行代码检查
+        run: npm run lint
+
+      - name: Build application / 构建应用
+        run: npm run build
+
+      - name: Check TypeScript types / 检查 TypeScript 类型
+        run: npx tsc --noEmit
+
+  docker-build-test:
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+
+    steps:
+      - name: Checkout code / 检出代码
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU / 设置 QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx / 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image / 构建 Docker 镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: pooplet:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
