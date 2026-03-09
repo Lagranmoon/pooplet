@@ -25,32 +25,57 @@ docker-compose down  # 停止容器
 
 ## 开发工作流程
 
-实现新功能时遵循以下步骤：
+**⚠️ 重要：所有功能开发必须在独立分支上进行，禁止直接在 main 分支开发。**
 
-1. **规划阶段**
-   - 创建功能分支: `git checkout -b feature/xxx`
+### 分支命名规范
+
+```bash
+feature/xxx      # 新功能 (如: feature/user-auth)
+bugfix/xxx       # Bug 修复 (如: bugfix/login-error)
+hotfix/xxx       # 紧急修复 (如: hotfix/security-issue)
+docs/xxx         # 文档更新 (如: docs/api-docs)
+refactor/xxx     # 重构 (如: refacor/db-layer)
+```
+
+### 开发流程
+
+1. **创建分支**
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/xxx
+   ```
+
+2. **规划阶段**
    - 分析需求，确定涉及的文件和组件
    - 规划数据库变更（如需要）
 
-2. **实现阶段**
+3. **实现阶段**
    - 逐步实现功能，保持提交粒度合理
    - 优先实现后端 API，再实现前端界面
    - 使用 TypeScript 类型确保类型安全
 
-3. **代码检查**
+4. **代码检查**
    - 使用 `skill: "vercel-react-best-practices"` 检查 React/Next.js 最佳实践
    - 运行 `npm run build` 确保构建成功
    - 检查是否有类型错误
 
-4. **功能验证**
+5. **功能验证**
    - 使用 `skill: "agent-browser"` 在浏览器中验证功能
    - 测试主要用户流程是否正常工作
    - 验证响应式布局
 
-5. **提交记录**
+6. **提交代码**
    - 使用中文提交信息，描述清楚变更内容
    - 提交前检查: `git status`
    - 提交: `git add -A && git commit -m "feat: xxx"`
+
+7. **推送并合并**
+   ```bash
+   git push -u origin feature/xxx
+   # 创建 Pull Request 或使用 gh pr create
+   # 合并后删除本地分支: git branch -d feature/xxx
+   ```
 
 ## 架构
 
