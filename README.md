@@ -1,4 +1,4 @@
-# 💩 Pooplet / 便便记录
+# 💩 便便记录
 
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js" />
@@ -9,102 +9,14 @@
 </p>
 
 <p align="center">
-  <b>English</b> | <a href="#中文">中文</a>
+  <a href="./README_EN.md">English</a> | <b>中文</b>
 </p>
 
 ---
 
-## English
-
-A simple and cute poop tracking application based on the Bristol Stool Scale (Type 1-7). Track your bowel movements, visualize your digestive health, and maintain healthy habits.
-
-### Features
-
-- 📅 **Calendar View** - Visual calendar with recorded days marked
-- 📝 **Record Management** - Add, edit, and delete poop records with time, type, and notes
-- 📊 **Statistics & Charts** - View distributions and trends over time
-- 🔐 **Multi-user Support** - Secure user authentication system
-- 📱 **Mobile Friendly** - Responsive design for all devices
-- 🐳 **Docker Ready** - Easy deployment with Docker
-
-### Tech Stack
-
-- **Framework**: Next.js 15 (App Router)
-- **Runtime**: Node.js 20
-- **Database**: SQLite (better-sqlite3)
-- **Styling**: Tailwind CSS 3 + shadcn/ui
-- **Charts**: Recharts
-- **Date**: date-fns
-
-### Quick Start
-
-```bash
-# Clone repository
-git clone https://github.com/Lagranmoon/pooplet.git
-cd pooplet
-
-# Install dependencies
-npm install
-
-# Initialize database
-npm run db:init
-
-# Run development server
-npm run dev
-```
-
-Open http://localhost:3000
-
-### Docker Deployment
-
-**Production (GitHub Packages Image) / 生产环境**
-
-```bash
-# Start with pre-built image / 使用预构建镜像启动
-docker-compose up -d
-
-# Use specific version / 使用特定版本
-POOPLE_TAG=v1.0.0 docker-compose up -d
-```
-
-**Development (Local Build) / 开发环境**
-
-```bash
-# Build and run locally / 本地构建并运行
-docker-compose -f docker-compose.dev.yml up -d --build
-```
-
-**Docker Run / 直接运行**
-
-```bash
-# Pull and run from GitHub Packages / 从 GitHub Packages 拉取并运行
-docker pull ghcr.io/lagranmoon/pooplet:latest
-docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
-```
-
-### Environment Variables / 环境变量
-
-Copy `.env.example` to `.env` and customize / 复制 `.env.example` 到 `.env` 并自定义：
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POOPLE_IMAGE` | Docker image to use | `ghcr.io/lagranmoon/pooplet` |
-| `POOPLE_TAG` | Image tag (version) | `latest` |
-| `POOPLE_PORT` | Server port | `3000` |
-| `JWT_SECRET` | Secret key for JWT | Random generated |
-| `DISABLE_REGISTRATION` | Disable new user registration | `false` |
-
----
-
-## 中文
-
 一款基于布里斯托大便分类法（1-7型）的便便记录应用。追踪排便情况，可视化消化健康，养成健康习惯。
 
-### 功能特性
+## 功能特性
 
 - 📅 **日历视图** - 直观的日历展示，标记记录日期
 - 📝 **记录管理** - 添加、编辑、删除排便记录（时间、类型、备注）
@@ -113,7 +25,7 @@ cp .env.example .env
 - 📱 **移动端友好** - 响应式设计，适配各种设备
 - 🐳 **Docker 支持** - 轻松部署
 
-### 技术栈
+## 技术栈
 
 - **框架**: Next.js 15 (App Router)
 - **运行时**: Node.js 20
@@ -122,7 +34,7 @@ cp .env.example .env
 - **图表**: Recharts
 - **日期**: date-fns
 
-### 快速开始
+## 快速开始
 
 ```bash
 # 克隆仓库
@@ -141,9 +53,9 @@ npm run dev
 
 访问 http://localhost:3000
 
-### Docker 部署
+## Docker 部署
 
-**生产环境 (GitHub Packages 镜像)**
+### 生产环境 (GitHub Packages 镜像)
 
 ```bash
 # 使用预构建镜像启动
@@ -153,14 +65,14 @@ docker-compose up -d
 POOPLE_TAG=v1.0.0 docker-compose up -d
 ```
 
-**开发环境 (本地构建)**
+### 开发环境 (本地构建)
 
 ```bash
 # 本地构建并运行
 docker-compose -f docker-compose.dev.yml up -d --build
 ```
 
-**直接运行**
+### 直接运行
 
 ```bash
 # 从 GitHub Packages 拉取并运行
@@ -168,7 +80,7 @@ docker pull ghcr.io/lagranmoon/pooplet:latest
 docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
 ```
 
-### 环境变量
+## 环境变量
 
 复制 `.env.example` 到 `.env` 并自定义：
 
@@ -186,20 +98,20 @@ cp .env.example .env
 
 ---
 
-## Bristol Stool Scale Reference / 布里斯托大便分类法
+## 布里斯托大便分类法
 
-| Type | Description | Health Indicator |
-|------|-------------|------------------|
-| 1 | Nut-like / 坚果状 | Constipation / 便秘 |
-| 2 | Lumpy sausage / 硬块状 | Mild constipation / 轻度便秘 |
-| 3 | Cracked sausage / 有裂纹 | Normal / 正常 |
-| 4 | Smooth sausage / 香蕉状 | Ideal / 理想 |
-| 5 | Soft blobs / 软块状 | Ideal / 理想 |
-| 6 | Fluffy edges / 边缘毛糙 | Mild diarrhea / 轻度腹泻 |
-| 7 | Watery / 水样 | Diarrhea / 腹泻 |
+| 类型 | 名称 | 健康状况 |
+|------|------|---------|
+| 1 | 坚果状 | 便秘 |
+| 2 | 硬块状 | 轻度便秘 |
+| 3 | 有裂纹 | 正常 |
+| 4 | 香蕉状 | 理想 |
+| 5 | 软块状 | 理想 |
+| 6 | 边缘毛糙 | 轻度腹泻 |
+| 7 | 水样 | 腹泻 |
 
 ---
 
-## License / 许可证
+## 许可证
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - 详见 [LICENSE](LICENSE) 文件。
