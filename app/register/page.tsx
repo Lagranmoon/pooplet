@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles, UserPlus, ShieldCheck } from 'lucide-react';
 import {
   validateUsername,
   validatePassword,
@@ -109,18 +109,31 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">注册</CardTitle>
-          <CardDescription>创建新账号</CardDescription>
+    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-4">
+      <Card className="w-full max-w-sm shadow-lg border-border/50">
+        <CardHeader className="text-center space-y-4">
+          {/* Brand Icon */}
+          <div className="mx-auto">
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-lg">
+              <UserPlus className="h-7 w-7" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <CardTitle className="text-2xl font-bold">创建账号</CardTitle>
+            <CardDescription className="text-sm">
+              注册新账号，开始记录你的便便 💩
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">用户名</Label>
+              <Label htmlFor="username" className="text-sm font-medium">
+                用户名
+              </Label>
               <Input
                 id="username"
+                placeholder="请输入用户名"
                 value={username}
                 onChange={handleUsernameChange}
                 required
@@ -131,41 +144,58 @@ export default function RegisterPage() {
                 title={VALIDATION_RULES.USERNAME.PATTERN_MESSAGE}
                 aria-invalid={!!usernameError}
                 aria-describedby={usernameError ? 'username-error' : undefined}
+                className="h-11"
               />
               {usernameError && (
-                <p id="username-error" className="text-sm text-red-500">
+                <p id="username-error" className="text-sm text-red-500 flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5" />
                   {usernameError}
                 </p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password" className="text-sm font-medium">
+                密码
+              </Label>
               <Input
                 id="password"
                 type="password"
+                placeholder="请输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
                 maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+                className="h-11"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">确认密码</Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                确认密码
+              </Label>
               <Input
                 id="confirmPassword"
                 type="password"
+                placeholder="请再次输入密码"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
                 maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+                className="h-11"
               />
             </div>
             {error && (
-              <p className="text-sm text-red-500">{error}</p>
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading || !isFormValid}>
+            <Button
+              type="submit"
+              className="w-full h-11 text-base font-medium"
+              disabled={isLoading || !isFormValid}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -175,9 +205,9 @@ export default function RegisterPage() {
                 '注册'
               )}
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground pt-2">
               已有账号？{' '}
-              <a href="/login" className="text-primary hover:underline">
+              <a href="/login" className="text-primary hover:underline font-medium">
                 立即登录
               </a>
             </p>

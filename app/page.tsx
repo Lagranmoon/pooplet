@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import { format, parseISO } from "date-fns"
 import { zhCN } from "date-fns/locale"
-import { Plus, Trash2, Edit2, Calendar, TrendingUp, Award } from "lucide-react"
+import { Plus, Trash2, Edit2, Calendar, TrendingUp, Award, Flame, Clock, StickyNote, Circle, CircleDot, CircleDashed, Minus, Waves, Droplets, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
@@ -132,7 +132,7 @@ export default function HomePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <span className="text-lg">🔥</span>
+              <Flame className="h-4 w-4 text-orange-500" />
               <span className="text-sm text-muted-foreground">连续记录</span>
             </div>
             <p className="text-2xl font-bold mt-1">{summary?.currentStreak || 0}天</p>
@@ -140,7 +140,7 @@ export default function HomePage() {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6 pb-6">
         {/* Calendar */}
         <Card className="md:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -191,46 +191,70 @@ export default function HomePage() {
                 )}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {selectedDateRecords.map((record) => {
                   const typeInfo = getBristolTypeInfo(record.type)
+                  const TypeIcon = getBristolIcon(record.type)
                   return (
                     <div
                       key={record.id}
                       className={cn(
-                        "p-3 rounded-lg border flex items-start justify-between",
-                        typeInfo.color
+                        "group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md",
+                        "flex items-center gap-4",
+                        typeInfo.color.replace('border-', 'border-opacity-50 '),
+                        "hover:scale-[1.02] active:scale-[0.98]"
                       )}
                     >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
+                      {/* Type Icon */}
+                      <div className={cn(
+                        "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
+                        typeInfo.color.split(" ")[0],
+                        "shadow-sm"
+                      )}>
+                        <TypeIcon className="h-6 w-6" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-semibold text-base">
+                            {typeInfo.label}
+                          </span>
+                          <Badge variant="secondary" className="text-xs font-medium">
                             类型 {record.type}
                           </Badge>
-                          {record.time && (
-                            <span className="text-xs opacity-75">{record.time}</span>
-                          )}
                         </div>
+                        {record.time && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{record.time}</span>
+                          </div>
+                        )}
                         {record.notes && (
-                          <p className="text-sm mt-1 opacity-80">{record.notes}</p>
+                          <div className="flex items-start gap-1.5 mt-2 text-sm text-muted-foreground">
+                            <StickyNote className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                            <span className="line-clamp-2">{record.notes}</span>
+                          </div>
                         )}
                       </div>
-                      <div className="flex gap-1">
+
+                      {/* Actions */}
+                      <div className="flex flex-col gap-2">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-9 w-9 rounded-lg border-border/60 hover:border-primary hover:text-primary transition-colors"
                           onClick={() => handleEditRecord(record)}
                         >
-                          <Edit2 className="h-3 w-3" />
+                          <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-9 w-9 rounded-lg border-border/60 hover:border-destructive hover:text-destructive transition-colors"
                           onClick={() => handleDeleteRecord(record.id)}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -288,4 +312,18 @@ function isSameDay(date1: Date, date2: Date): boolean {
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate()
   )
+}
+
+// 布里斯托类型图标映射
+function getBristolIcon(type: number) {
+  switch (type) {
+    case 1: return Circle
+    case 2: return CircleDot
+    case 3: return CircleDashed
+    case 4: return Minus
+    case 5: return Waves
+    case 6: return Droplets
+    case 7: return AlertCircle
+    default: return Circle
+  }
 }

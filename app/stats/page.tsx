@@ -3,10 +3,9 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { StatsCharts } from "@/components/stats-charts"
 import { getBristolTypeInfo } from "@/lib/utils"
-import { Calendar, Activity, Target, TrendingUp } from "lucide-react"
+import { Calendar, Activity, Target, TrendingUp, BarChart3, Flame, Award } from "lucide-react"
 import { useStats } from "@/lib/hooks"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -42,9 +41,12 @@ export default function StatsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold">统计数据</h1>
+        <div className="flex items-center gap-2">
+          <BarChart3 className="h-6 w-6 text-amber-600" />
+          <h1 className="text-2xl font-bold">统计数据</h1>
+        </div>
         <Tabs value={period} onValueChange={setPeriod}>
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-3 sm:w-auto">
             <TabsTrigger value="week">本周</TabsTrigger>
             <TabsTrigger value="month">本月</TabsTrigger>
             <TabsTrigger value="year">本年</TabsTrigger>

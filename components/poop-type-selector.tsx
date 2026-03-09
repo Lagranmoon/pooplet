@@ -1,6 +1,7 @@
 "use client"
 
 import { cn, getBristolTypeInfo } from "@/lib/utils"
+import { Circle, CircleDot, CircleDashed, Minus, Waves, Droplets, AlertCircle } from "lucide-react"
 
 interface PoopTypeSelectorProps {
   value: number
@@ -8,13 +9,13 @@ interface PoopTypeSelectorProps {
 }
 
 const bristolTypes = [
-  { type: 1, icon: "🌰", name: "坚果状", desc: "严重便秘" },
-  { type: 2, icon: "🌽", name: "硬块状", desc: "轻度便秘" },
-  { type: 3, icon: "🥖", name: "有裂纹", desc: "正常" },
-  { type: 4, icon: "🍌", name: "香蕉状", desc: "理想" },
-  { type: 5, icon: "🥞", name: "软块状", desc: "理想" },
-  { type: 6, icon: "🍦", name: "边缘毛糙", desc: "轻度腹泻" },
-  { type: 7, icon: "💧", name: "水样", desc: "腹泻" },
+  { type: 1, name: "坚果状", desc: "严重便秘", Icon: Circle },
+  { type: 2, name: "硬块状", desc: "轻度便秘", Icon: CircleDot },
+  { type: 3, name: "有裂纹", desc: "正常", Icon: CircleDashed },
+  { type: 4, name: "香蕉状", desc: "理想", Icon: Minus },
+  { type: 5, name: "软块状", desc: "理想", Icon: Waves },
+  { type: 6, name: "边缘毛糙", desc: "轻度腹泻", Icon: Droplets },
+  { type: 7, name: "水样", desc: "腹泻", Icon: AlertCircle },
 ]
 
 export function PoopTypeSelector({ value, onChange }: PoopTypeSelectorProps) {
@@ -23,6 +24,7 @@ export function PoopTypeSelector({ value, onChange }: PoopTypeSelectorProps) {
       {bristolTypes.map((t) => {
         const isSelected = value === t.type
         const info = getBristolTypeInfo(t.type)
+        const IconComponent = t.Icon
 
         return (
           <button
@@ -37,7 +39,12 @@ export function PoopTypeSelector({ value, onChange }: PoopTypeSelectorProps) {
               info.color.split(" ")[0].replace("bg-", "text-").replace("100", "700")
             )}
           >
-            <span className="text-2xl mb-1">{t.icon}</span>
+            <div className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center mb-1",
+              info.color.split(" ")[0]
+            )}>
+              <IconComponent className="h-4 w-4" />
+            </div>
             <span className="text-xs font-medium">{t.name}</span>
             <span className="text-[10px] text-muted-foreground hidden sm:block">
               {t.desc}

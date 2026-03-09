@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles, ShieldCheck } from 'lucide-react';
 import { VALIDATION_RULES } from '@/lib/validation';
 
 export default function LoginPage() {
@@ -60,18 +60,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">登录</CardTitle>
-          <CardDescription>输入账号密码继续</CardDescription>
+    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-4">
+      <Card className="w-full max-w-sm shadow-lg border-border/50">
+        <CardHeader className="text-center space-y-4">
+          {/* Brand Icon */}
+          <div className="mx-auto">
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-lg">
+              <Sparkles className="h-7 w-7" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <CardTitle className="text-2xl font-bold">欢迎回来</CardTitle>
+            <CardDescription className="text-sm">
+              登录账号，继续记录你的便便 💩
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">用户名</Label>
+              <Label htmlFor="username" className="text-sm font-medium">
+                用户名
+              </Label>
               <Input
                 id="username"
+                placeholder="请输入用户名"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -79,25 +92,37 @@ export default function LoginPage() {
                 minLength={VALIDATION_RULES.USERNAME.MIN_LENGTH}
                 maxLength={VALIDATION_RULES.USERNAME.MAX_LENGTH}
                 autoComplete="username"
+                className="h-11"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password" className="text-sm font-medium">
+                密码
+              </Label>
               <Input
                 id="password"
                 type="password"
+                placeholder="请输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
                 maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
                 autoComplete="current-password"
+                className="h-11"
               />
             </div>
             {error && (
-              <p className="text-sm text-red-500">{error}</p>
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading || !isFormValid}>
+            <Button
+              type="submit"
+              className="w-full h-11 text-base font-medium"
+              disabled={isLoading || !isFormValid}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -107,9 +132,12 @@ export default function LoginPage() {
                 '登录'
               )}
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground pt-2">
               还没有账号？{' '}
-              <a href="/register" className="text-primary hover:underline">
+              <a
+                href="/register"
+                className="text-primary hover:underline font-medium"
+              >
                 立即注册
               </a>
             </p>
