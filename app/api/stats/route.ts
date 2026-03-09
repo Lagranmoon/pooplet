@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbOperations } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subWeeks, subMonths, subYears } from 'date-fns';
 
 // GET /api/stats - 获取统计数据
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || 'month';
 
@@ -30,19 +40,11 @@ export async function GET(request: NextRequest) {
         end = format(endOfMonth(today), 'yyyy-MM-dd');
     }
 
-    // Get basic stats
-    const stats = dbOperations.getStatsByPeriod(start, end);
+    const stats = dbOperations.getStatsByPeriod(session.userId, start, end);
+    const typeDistribution = dbOperations.getTypeDistribution(session.userId, start, end);
+    const dailyCounts = dbOperations.getDailyCounts(session.userId, start, end);
+    const currentStreak = dbOperations.getCurrentStreak(session.userId);
 
-    // Get type distribution
-    const typeDistribution = dbOperations.getTypeDistribution(start, end);
-
-    // Get daily counts for trend
-    const dailyCounts = dbOperations.getDailyCounts(start, end);
-
-    // Get current streak
-    const currentStreak = dbOperations.getCurrentStreak();
-
-    // Get previous period stats for comparison
     let prevStart: string;
     let prevEnd: string;
 
@@ -64,7 +66,7 @@ export async function GET(request: NextRequest) {
         prevEnd = format(endOfMonth(subMonths(today, 1)), 'yyyy-MM-dd');
     }
 
-    const prevStats = dbOperations.getStatsByPeriod(prevStart, prevEnd);
+    const prevStats = dbOperations.getStatsByPeriod(session.userId, prevStart, prevEnd);
 
     return NextResponse.json({
       period,
@@ -89,7 +91,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching stats:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch statistics' },
+      { error: '获取统计数据失败' },
       { status: 500 }
     );
   }

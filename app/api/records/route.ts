@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbOperations } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear } from 'date-fns';
 
 // GET /api/records - 获取记录列表
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month');
     const period = searchParams.get('period');
@@ -12,13 +22,12 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate');
 
     if (startDate && endDate) {
-      const records = dbOperations.getRecordsByDateRange(startDate, endDate);
+      const records = dbOperations.getRecordsByDateRange(session.userId, startDate, endDate);
       return NextResponse.json({ records });
     }
 
     if (month) {
-      // month format: YYYY-MM
-      const records = dbOperations.getRecordsByMonth(month);
+      const records = dbOperations.getRecordsByMonth(session.userId, month);
       return NextResponse.json({ records });
     }
 
@@ -45,16 +54,16 @@ export async function GET(request: NextRequest) {
           end = format(endOfMonth(today), 'yyyy-MM-dd');
       }
 
-      const records = dbOperations.getRecordsByDateRange(start, end);
+      const records = dbOperations.getRecordsByDateRange(session.userId, start, end);
       return NextResponse.json({ records, period, start, end });
     }
 
-    const records = dbOperations.getAllRecords();
+    const records = dbOperations.getAllRecords(session.userId);
     return NextResponse.json({ records });
   } catch (error) {
     console.error('Error fetching records:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch records' },
+      { error: '获取记录失败' },
       { status: 500 }
     );
   }
@@ -63,29 +72,38 @@ export async function GET(request: NextRequest) {
 // POST /api/records - 创建记录
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { date, time, type, notes } = body;
 
     if (!date || !type) {
       return NextResponse.json(
-        { error: 'Date and type are required' },
+        { error: '日期和类型不能为空' },
         { status: 400 }
       );
     }
 
     if (type < 1 || type > 7) {
       return NextResponse.json(
-        { error: 'Type must be between 1 and 7' },
+        { error: '类型必须在 1-7 之间' },
         { status: 400 }
       );
     }
 
-    const record = dbOperations.createRecord({ date, time, type, notes });
+    const record = dbOperations.createRecord(session.userId, { date, time, type, notes });
     return NextResponse.json({ record }, { status: 201 });
   } catch (error) {
     console.error('Error creating record:', error);
     return NextResponse.json(
-      { error: 'Failed to create record' },
+      { error: '创建记录失败' },
       { status: 500 }
     );
   }

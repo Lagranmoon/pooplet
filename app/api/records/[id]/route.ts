@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbOperations } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
 // GET /api/records/:id - 获取单条记录
 export async function GET(
@@ -7,21 +8,30 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const recordId = parseInt(id, 10);
 
     if (isNaN(recordId)) {
       return NextResponse.json(
-        { error: 'Invalid record ID' },
+        { error: '无效的记录ID' },
         { status: 400 }
       );
     }
 
-    const record = dbOperations.getRecordById(recordId);
+    const record = dbOperations.getRecordById(session.userId, recordId);
 
     if (!record) {
       return NextResponse.json(
-        { error: 'Record not found' },
+        { error: '记录不存在' },
         { status: 404 }
       );
     }
@@ -30,7 +40,7 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching record:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch record' },
+      { error: '获取记录失败' },
       { status: 500 }
     );
   }
@@ -42,12 +52,21 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const recordId = parseInt(id, 10);
 
     if (isNaN(recordId)) {
       return NextResponse.json(
-        { error: 'Invalid record ID' },
+        { error: '无效的记录ID' },
         { status: 400 }
       );
     }
@@ -57,16 +76,16 @@ export async function PUT(
 
     if (type !== undefined && (type < 1 || type > 7)) {
       return NextResponse.json(
-        { error: 'Type must be between 1 and 7' },
+        { error: '类型必须在 1-7 之间' },
         { status: 400 }
       );
     }
 
-    const record = dbOperations.updateRecord(recordId, { date, time, type, notes });
+    const record = dbOperations.updateRecord(session.userId, recordId, { date, time, type, notes });
 
     if (!record) {
       return NextResponse.json(
-        { error: 'Record not found' },
+        { error: '记录不存在' },
         { status: 404 }
       );
     }
@@ -75,7 +94,7 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating record:', error);
     return NextResponse.json(
-      { error: 'Failed to update record' },
+      { error: '更新记录失败' },
       { status: 500 }
     );
   }
@@ -87,21 +106,30 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const recordId = parseInt(id, 10);
 
     if (isNaN(recordId)) {
       return NextResponse.json(
-        { error: 'Invalid record ID' },
+        { error: '无效的记录ID' },
         { status: 400 }
       );
     }
 
-    const result = dbOperations.deleteRecord(recordId);
+    const result = dbOperations.deleteRecord(session.userId, recordId);
 
     if (!result) {
       return NextResponse.json(
-        { error: 'Record not found' },
+        { error: '记录不存在' },
         { status: 404 }
       );
     }
@@ -110,7 +138,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deleting record:', error);
     return NextResponse.json(
-      { error: 'Failed to delete record' },
+      { error: '删除记录失败' },
       { status: 500 }
     );
   }
