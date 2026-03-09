@@ -71,3 +71,25 @@ export function useAuthUser() {
     mutate,
   };
 }
+
+interface ConfigData {
+  registrationDisabled: boolean;
+}
+
+export function useConfig() {
+  const { data, error, isLoading } = useSWR(
+    '/api/config',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000, // 1 minute cache
+    }
+  );
+
+  return {
+    config: data as ConfigData | undefined,
+    error,
+    isLoading,
+    isRegistrationDisabled: data?.registrationDisabled || false,
+  };
+}
