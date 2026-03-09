@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 33% 98%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 24 74% 35%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 30 20% 96%;
+    --secondary-foreground: 24 9.8% 10%;
+    --muted: 30 15% 94%;
+    --muted-foreground: 24 5.4% 46%;
+    --accent: 30 20% 96%;
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 24 5.7% 87%;
+    --input: 24 5.7% 87%;
+    --ring: 24 74% 35%;
+    --radius: 0.75rem;
+
+    /* Poop Tracker Custom Colors */
+    --poop-brown: 30 50% 35%;
+    --poop-brown-light: 30 40% 65%;
+    --poop-success: 142 71% 45%;
+    --poop-warning: 48 96% 44%;
+    --poop-danger: 0 84% 60%;
+    --poop-warm: 30 33% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Animation utilities */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Bristol type colors */
+.bristol-type-1 { @apply bg-red-100 text-red-700 border-red-200; }
+.bristol-type-2 { @apply bg-yellow-100 text-yellow-700 border-yellow-200; }
+.bristol-type-3 { @apply bg-green-100 text-green-700 border-green-200; }
+.bristol-type-4 { @apply bg-green-100 text-green-700 border-green-200; }
+.bristol-type-5 { @apply bg-green-100 text-green-700 border-green-200; }
+.bristol-type-6 { @apply bg-yellow-100 text-yellow-700 border-yellow-200; }
+.bristol-type-7 { @apply bg-red-100 text-red-700 border-red-200; }

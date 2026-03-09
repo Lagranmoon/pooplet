@@ -1,0 +1,22 @@
+{
+  "name": "PoopTracker - 便便记录",
+  "short_name": "PoopTracker",
+  "description": "简单易用的便便记录应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDF8F3",
+  "theme_color": "#8B5A2B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
