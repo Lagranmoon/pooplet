@@ -7,12 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Sparkles, ShieldCheck } from 'lucide-react';
 import { VALIDATION_RULES } from '@/lib/validation';
+import { useConfig } from '@/lib/hooks';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // 获取系统配置 / Get system config
+  const { isRegistrationDisabled, isLoading: isConfigLoading } = useConfig();
 
   // 检查表单是否有效（用于禁用提交按钮）
   const isFormValid =
@@ -132,15 +136,17 @@ export default function LoginPage() {
                 '登录'
               )}
             </Button>
-            <p className="text-center text-sm text-muted-foreground pt-2">
-              还没有账号？{' '}
-              <a
-                href="/register"
-                className="text-primary hover:underline font-medium"
-              >
-                立即注册
-              </a>
-            </p>
+            {!isConfigLoading && !isRegistrationDisabled && (
+              <p className="text-center text-sm text-muted-foreground pt-2">
+                还没有账号？{' '}
+                <a
+                  href="/register"
+                  className="text-primary hover:underline font-medium"
+                >
+                  立即注册
+                </a>
+              </p>
+            )}
           </form>
         </CardContent>
       </Card>

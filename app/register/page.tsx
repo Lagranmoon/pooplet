@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Sparkles, UserPlus, ShieldCheck } from 'lucide-react';
+import { Loader2, UserPlus, ShieldCheck, Ban } from 'lucide-react';
 import {
   validateUsername,
   validatePassword,
   validatePasswordMatch,
   VALIDATION_RULES,
 } from '@/lib/validation';
+import { useConfig } from '@/lib/hooks';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -20,6 +21,9 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // 获取系统配置 / Get system config
+  const { isRegistrationDisabled, isLoading: isConfigLoading } = useConfig();
 
   // 检查表单是否有效（用于禁用提交按钮）
   const isFormValid =
@@ -107,6 +111,43 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
+
+  // 如果注册被禁用，显示提示信息
+  // Show disabled message if registration is disabled
+  if (!isConfigLoading && isRegistrationDisabled) {
+    return (
+      <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-4">
+        <Card className="w-full max-w-sm shadow-lg border-border/50">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto">
+              <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gray-100 text-gray-500">
+                <Ban className="h-7 w-7" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <CardTitle className="text-2xl font-bold">注册已禁用</CardTitle>
+              <CardDescription className="text-sm">
+                系统当前不接受新用户注册
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center space-y-4">
+              <p className="text-sm text-muted-foreground">
+                如果您已有账号，请直接登录
+              </p>
+              <a
+                href="/login"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium h-11 px-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-full"
+              >
+                前往登录
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-4">

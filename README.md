@@ -60,9 +60,6 @@ Open http://localhost:3000
 **Production (GitHub Packages Image) / 生产环境**
 
 ```bash
-# Setup data directory permissions / 设置数据目录权限
-./scripts/setup-permissions.sh
-
 # Start with pre-built image / 使用预构建镜像启动
 docker-compose up -d
 
@@ -82,7 +79,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 ```bash
 # Pull and run from GitHub Packages / 从 GitHub Packages 拉取并运行
 docker pull ghcr.io/lagranmoon/pooplet:latest
-docker run -p 3000:3000 -v $(pwd)/data:/app/data --user 1001:1001 ghcr.io/lagranmoon/pooplet:latest
+docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
 ```
 
 ### Environment Variables / 环境变量
@@ -99,12 +96,7 @@ cp .env.example .env
 | `POOPLE_TAG` | Image tag (version) | `latest` |
 | `POOPLE_PORT` | Server port | `3000` |
 | `JWT_SECRET` | Secret key for JWT | Random generated |
-
-### Security Notes / 安全说明
-
-- Container runs as non-root user (UID 1001) / 容器以非 root 用户运行 (UID 1001)
-- Data directory must have correct permissions / 数据目录需要正确权限
-- See `scripts/setup-permissions.sh` for details / 详情见 `scripts/setup-permissions.sh` |
+| `DISABLE_REGISTRATION` | Disable new user registration | `false` |
 
 ---
 
@@ -154,9 +146,6 @@ npm run dev
 **生产环境 (GitHub Packages 镜像)**
 
 ```bash
-# 设置数据目录权限
-./scripts/setup-permissions.sh
-
 # 使用预构建镜像启动
 docker-compose up -d
 
@@ -176,7 +165,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 ```bash
 # 从 GitHub Packages 拉取并运行
 docker pull ghcr.io/lagranmoon/pooplet:latest
-docker run -p 3000:3000 -v $(pwd)/data:/app/data --user 1001:1001 ghcr.io/lagranmoon/pooplet:latest
+docker run -p 3000:3000 -v $(pwd)/data:/app/data ghcr.io/lagranmoon/pooplet:latest
 ```
 
 ### 环境变量
@@ -193,12 +182,7 @@ cp .env.example .env
 | `POOPLE_TAG` | 镜像标签（版本） | `latest` |
 | `POOPLE_PORT` | 服务端口 | `3000` |
 | `JWT_SECRET` | JWT 密钥 | 随机生成 |
-
-### 安全说明
-
-- 容器以非 root 用户运行 (UID 1001)
-- 数据目录需要正确权限
-- 详情见 `scripts/setup-permissions.sh`
+| `DISABLE_REGISTRATION` | 禁用新用户注册 | `false` |
 
 ---
 

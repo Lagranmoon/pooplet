@@ -3,8 +3,21 @@ import { userOperations } from '@/lib/db';
 import { hashPassword, createSession } from '@/lib/auth';
 import { validateRegisterBody, validateUsername } from '@/lib/validation';
 
+// 检查是否禁用注册
+// Check if registration is disabled
+const isRegistrationDisabled = process.env.DISABLE_REGISTRATION === 'true';
+
 export async function POST(request: NextRequest) {
   try {
+    // 如果禁用注册，直接返回错误
+    // Return error if registration is disabled
+    if (isRegistrationDisabled) {
+      return NextResponse.json(
+        { error: '注册已禁用' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
 
     // 统一验证请求体
