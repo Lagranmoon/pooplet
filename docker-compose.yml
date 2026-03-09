@@ -14,13 +14,11 @@ services:
     restart: unless-stopped
     ports:
       - "${POOPLE_PORT:-3000}:3000"
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
       - PORT=3000
-      # 可选: 自定义 JWT 密钥 / Optional: Custom JWT secret
-      # - JWT_SECRET=your-secret-key
-      # 可选: 禁用注册 / Optional: Disable registration
-      # - DISABLE_REGISTRATION=true
     volumes:
       # 持久化 SQLite 数据库 / Persist SQLite database
       - ./data:/app/data
