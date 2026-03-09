@@ -70,11 +70,56 @@ refactor/xxx     # 重构 (如: refacor/db-layer)
    - 提交前检查: `git status`
    - 提交: `git add -A && git commit -m "feat: xxx"`
 
-7. **推送并合并**
+7. **推送并创建 PR**
    ```bash
    git push -u origin feature/xxx
-   # 创建 Pull Request 或使用 gh pr create
-   # 合并后删除本地分支: git branch -d feature/xxx
+   ```
+
+8. **创建 Pull Request（必须）**
+   - **⚠️ 禁止直接推送到 GitHub main 分支，必须使用 Pull Request**
+   - 创建 PR 前，先向用户展示变更摘要，等待用户确认
+   - 使用 `gh pr create` 创建 PR，或访问 GitHub 网页创建
+   - PR 标题和描述要清晰说明变更内容
+   - 等待 CI 检查通过后，再合并到 main
+
+   ```bash
+   # 查看变更摘要
+   git log main..feature/xxx --oneline
+   git diff main...feature/xxx --stat
+
+   # 用户确认后创建 PR
+   gh pr create --title "feat: xxx" --body "变更说明..."
+   ```
+
+### 创建 PR 前确认清单
+
+在创建 Pull Request 前，必须向用户确认以下内容：
+
+1. **变更摘要** - 展示本次开发的所有提交
+   ```bash
+   git log main..feature/xxx --oneline
+   ```
+
+2. **文件变更** - 展示修改的文件统计
+   ```bash
+   git diff main...feature/xxx --stat
+   ```
+
+3. **确认问题** - 向用户询问：
+   - "以上变更是否正确？"
+   - "是否准备创建 Pull Request 合并到 main 分支？"
+   - 等待用户明确回复 "是" 或 "确认" 后再执行
+
+4. **创建 PR** - 用户确认后：
+   ```bash
+   gh pr create --title "类型: 简短描述" --body "详细变更说明..."
+   ```
+
+5. **合并后清理** - PR 合并后删除本地分支：
+   ```bash
+   git checkout main
+   git pull origin main
+   git branch -d feature/xxx
    ```
 
 ## 架构
