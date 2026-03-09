@@ -1,35 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userOperations } from '@/lib/db';
 import { hashPassword, createSession } from '@/lib/auth';
+import { validateRegisterBody, validateUsername } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // 统一验证请求体
+    const validation = validateRegisterBody(body);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { error: validation.error },
+        { status: 400 }
+      );
+    }
+
     const { username, password } = body;
 
-    if (!username || !password) {
+    // 再次验证用户名格式（白名单）
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.valid) {
       return NextResponse.json(
-        { error: '用户名和密码不能为空' },
+        { error: usernameValidation.error },
         { status: 400 }
       );
     }
 
-    if (username.length < 3 || username.length > 20) {
-      return NextResponse.json(
-        { error: '用户名长度需在 3-20 个字符之间' },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: '密码长度至少 6 个字符' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists
-    const existingUser = userOperations.getUserByUsername(username);
+    // 使用 trim 后的用户名检查是否存在
+    const trimmedUsername = username.trim();
+    const existingUser = userOperations.getUserByUsername(trimmedUsername);
     if (existingUser) {
       return NextResponse.json(
         { error: '用户名已被使用' },
@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user
+    // Create user with trimmed username
     const passwordHash = await hashPassword(password);
-    const user = userOperations.createUser(username, passwordHash);
+    const user = userOperations.createUser(trimmedUsername, passwordHash);
 
     // Create session
     await createSession(user.id, user.username);

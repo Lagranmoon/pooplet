@@ -1,23 +1,39 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { VALIDATION_RULES } from '@/lib/validation';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // 检查表单是否有效（用于禁用提交按钮）
+  const isFormValid =
+    username.trim().length >= VALIDATION_RULES.USERNAME.MIN_LENGTH &&
+    password.length >= VALIDATION_RULES.PASSWORD.MIN_LENGTH;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // 客户端验证 - 检查空值
+    if (!username.trim()) {
+      setError('用户名不能为空');
+      return;
+    }
+
+    if (!password) {
+      setError('密码不能为空');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -34,8 +50,8 @@ export default function LoginPage() {
         return;
       }
 
-      router.push('/');
-      router.refresh();
+      // 使用 window.location 进行完整页面刷新，确保 SWR 数据重新获取
+      window.location.href = '/';
     } catch {
       setError('网络错误，请重试');
     } finally {
@@ -60,6 +76,9 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoFocus
+                minLength={VALIDATION_RULES.USERNAME.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.USERNAME.MAX_LENGTH}
+                autoComplete="username"
               />
             </div>
             <div className="space-y-2">
@@ -70,12 +89,15 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+                autoComplete="current-password"
               />
             </div>
             {error && (
               <p className="text-sm text-red-500">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading || !isFormValid}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

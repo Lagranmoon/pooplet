@@ -1,32 +1,85 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import {
+  validateUsername,
+  validatePassword,
+  validatePasswordMatch,
+  VALIDATION_RULES,
+} from '@/lib/validation';
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // 检查表单是否有效（用于禁用提交按钮）
+  const isFormValid =
+    username.trim().length >= VALIDATION_RULES.USERNAME.MIN_LENGTH &&
+    username.trim().length <= VALIDATION_RULES.USERNAME.MAX_LENGTH &&
+    VALIDATION_RULES.USERNAME.PATTERN.test(username.trim()) &&
+    password.length >= VALIDATION_RULES.PASSWORD.MIN_LENGTH &&
+    confirmPassword.length >= VALIDATION_RULES.PASSWORD.MIN_LENGTH;
+
+  // 实时验证用户名
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
+
+    // 实时验证（仅在输入后）
+    if (value) {
+      const result = validateUsername(value);
+      setUsernameError(result.valid ? '' : result.error || '');
+    } else {
+      setUsernameError('');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setUsernameError('');
 
-    if (password !== confirmPassword) {
-      setError('两次输入的密码不一致');
+    // 客户端验证 - 检查空值
+    if (!username.trim()) {
+      setUsernameError('用户名不能为空');
       return;
     }
 
-    if (password.length < 6) {
-      setError('密码长度至少 6 个字符');
+    if (!password) {
+      setError('密码不能为空');
+      return;
+    }
+
+    if (!confirmPassword) {
+      setError('请确认密码');
+      return;
+    }
+
+    // 客户端验证
+    const usernameResult = validateUsername(username);
+    if (!usernameResult.valid) {
+      setUsernameError(usernameResult.error || '');
+      return;
+    }
+
+    const passwordResult = validatePassword(password);
+    if (!passwordResult.valid) {
+      setError(passwordResult.error || '');
+      return;
+    }
+
+    const matchResult = validatePasswordMatch(password, confirmPassword);
+    if (!matchResult.valid) {
+      setError(matchResult.error || '');
       return;
     }
 
@@ -36,7 +89,7 @@ export default function RegisterPage() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, confirmPassword }),
       });
 
       const data = await response.json();
@@ -46,8 +99,8 @@ export default function RegisterPage() {
         return;
       }
 
-      router.push('/');
-      router.refresh();
+      // 使用 window.location 进行完整页面刷新，确保 SWR 数据重新获取
+      window.location.href = '/';
     } catch {
       setError('网络错误，请重试');
     } finally {
@@ -69,10 +122,21 @@ export default function RegisterPage() {
               <Input
                 id="username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 required
                 autoFocus
+                minLength={VALIDATION_RULES.USERNAME.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.USERNAME.MAX_LENGTH}
+                pattern={VALIDATION_RULES.USERNAME.PATTERN.source}
+                title={VALIDATION_RULES.USERNAME.PATTERN_MESSAGE}
+                aria-invalid={!!usernameError}
+                aria-describedby={usernameError ? 'username-error' : undefined}
               />
+              {usernameError && (
+                <p id="username-error" className="text-sm text-red-500">
+                  {usernameError}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">密码</Label>
@@ -82,6 +146,8 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
               />
             </div>
             <div className="space-y-2">
@@ -92,12 +158,14 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                minLength={VALIDATION_RULES.PASSWORD.MIN_LENGTH}
+                maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
               />
             </div>
             {error && (
               <p className="text-sm text-red-500">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading || !isFormValid}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
