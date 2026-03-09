@@ -1,0 +1,37 @@
+version: '3.8'
+
+# 本地开发环境配置 - 使用本地 Dockerfile 构建
+# Local development configuration - Uses local Dockerfile
+#
+# 使用方法 / Usage:
+#   docker-compose -f docker-compose.dev.yml up -d
+#
+# 重新构建 / Rebuild:
+#   docker-compose -f docker-compose.dev.yml up -d --build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: pooplet-dev
+    restart: unless-stopped
+    ports:
+      - "${POOPLE_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=dev-secret-key-do-not-use-in-production
+    volumes:
+      # 持久化 SQLite 数据库 / Persist SQLite database
+      - ./data:/app/data
+    # 使用非 root 用户运行 (与 Dockerfile 中一致)
+    # Run as non-root user (matches Dockerfile)
+    user: "1001:1001"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/auth/me"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
