@@ -11,6 +11,11 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Enable BuildKit for cache mounts
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # 先运行测试，确保代码质量
   test:
@@ -51,9 +56,6 @@ jobs:
       - name: Checkout code / 检出代码
         uses: actions/checkout@v4
 
-      - name: Set up QEMU / 设置 QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx / 设置 Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -83,11 +85,12 @@ jobs:
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
 
       - name: Generate artifact attestation / 生成制品证明
         uses: actions/attest-build-provenance@v1
