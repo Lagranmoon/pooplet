@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { User, LogOut, LayoutGrid, BarChart3 } from 'lucide-react';
 
@@ -9,18 +10,18 @@ export function Nav() {
   if (!user) {
     return (
       <nav className="ml-auto flex items-center gap-2">
-        <a
+        <Link
           href="/login"
           className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
         >
           登录
-        </a>
-        <a
+        </Link>
+        <Link
           href="/register"
           className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 px-3 bg-primary text-primary-foreground shadow hover:bg-primary/90 transition-colors"
         >
           注册
-        </a>
+        </Link>
       </nav>
     );
   }
@@ -28,34 +29,34 @@ export function Nav() {
   return (
     <nav className="ml-auto flex items-center gap-1 sm:gap-2">
       {/* Desktop nav links */}
-      <a
+      <Link
         href="/"
         className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <LayoutGrid className="h-4 w-4" />
         日历
-      </a>
-      <a
+      </Link>
+      <Link
         href="/stats"
         className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <BarChart3 className="h-4 w-4" />
         统计
-      </a>
+      </Link>
 
       {/* Mobile nav icons */}
-      <a
+      <Link
         href="/"
         className="sm:hidden inline-flex items-center justify-center rounded-md h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <LayoutGrid className="h-4 w-4" />
-      </a>
-      <a
+      </Link>
+      <Link
         href="/stats"
         className="sm:hidden inline-flex items-center justify-center rounded-md h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <BarChart3 className="h-4 w-4" />
-      </a>
+      </Link>
 
       <div className="flex items-center gap-2 pl-2 sm:pl-4 border-l">
         <div className="hidden sm:flex items-center gap-1.5 text-sm font-medium">
